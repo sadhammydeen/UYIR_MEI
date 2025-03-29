@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowRight, Heart, Users, GraduationCap, Home } from 'lucide-react';
 import { useLoading } from '@/contexts/LoadingContext';
-import { ArrowRight } from 'lucide-react';
 
 const Hero = () => {
   const { setIsLoading, setLoadingText } = useLoading();
+  const [imageError, setImageError] = useState(false);
 
   const handleNavigation = (path: string) => {
     setIsLoading(true);
@@ -15,67 +16,84 @@ const Hero = () => {
     }, 800);
   };
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.error('Image failed to load:', e);
+    setImageError(true);
+  };
+
+  const stats = [
+    { icon: Users, value: '50,000+', label: 'Lives Transformed' },
+    { icon: GraduationCap, value: '15,000+', label: 'Children Educated' },
+    { icon: Home, value: '1,000+', label: 'Families Supported' },
+    { icon: Heart, value: '25+', label: 'Communities Served' }
+  ];
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0">
-        <img 
-          src="/lovable-uploads/child-poverty.jpg" 
-          alt="Child in need" 
-          className="w-full h-full object-cover filter grayscale"
-        />
-        <div className="absolute inset-0 bg-black/60"></div>
+    <div className="relative min-h-screen flex items-center">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        {!imageError ? (
+          <div className="absolute inset-0">
+            <div 
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url('/lovable-uploads/three-children.jpg')`,
+                filter: 'brightness(0.8) contrast(1.1)',
+              }}
+            ></div>
+            {/* Gradient overlays for better text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-theuyir-darkgrey to-theuyir-yellow/20"></div>
+        )}
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-24 relative z-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-center mb-12">
-            <img 
-              src="/lovable-uploads/b490f380-ac02-47bc-999e-0cb3e0c34afc.png"
-              alt="Uyir Mei"
-              className="h-32 w-auto drop-shadow-2xl"
-            />
+      <div className="container mx-auto px-4 relative z-20">
+        <div className="max-w-3xl">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight font-display drop-shadow-lg">
+            Every Child Deserves <span className="text-theuyir-yellow">A Brighter Tomorrow</span>
+          </h1>
+          <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed font-sans drop-shadow-md">
+            In the heart of India, countless children like these await a chance for a better future. Through education, healthcare, and community support, we can transform their lives from uncertainty to opportunity. Join us in making their dreams possible.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Link
+              to="/give"
+              onClick={() => handleNavigation('/give')}
+              className="bg-theuyir-yellow text-black px-8 py-4 rounded-lg font-semibold hover:brightness-110 transition-all duration-300 flex items-center group font-sans shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              Make a Difference Today
+              <ArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => handleNavigation('/about')}
+              className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-all duration-300 flex items-center group font-sans shadow-lg"
+            >
+              Learn How We Help
+              <ArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
           </div>
+        </div>
 
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-white drop-shadow-2xl">
-              <span className="bg-gradient-to-r from-theuyir-yellow via-theuyir-pink to-theuyir-yellow bg-clip-text text-transparent">
-                Making a Real Difference
-              </span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
-              Join us in our mission to bridge the gap between those who need help and those who can provide it. Together, we can create lasting change in communities across India.
-            </p>
-
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
-              <Link
-                to="/get-involved"
-                onClick={() => handleNavigation('/get-involved')}
-                className="bg-theuyir-yellow text-black px-10 py-5 rounded-lg font-semibold hover:brightness-110 transition-all duration-300 flex items-center group shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
-              >
-                Get Involved Now
-                <ArrowRight className="ml-3 transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
-              <Link
-                to="/about"
-                onClick={() => handleNavigation('/about')}
-                className="bg-white/10 text-white border-2 border-white/20 px-10 py-5 rounded-lg font-semibold hover:bg-white/20 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 backdrop-blur-sm"
-              >
-                Learn More
-              </Link>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
+          {stats.map(({ icon: Icon, value, label }) => (
+            <div key={label} className="bg-black/30 backdrop-blur-sm p-6 rounded-lg text-center group hover:bg-black/40 transition-all duration-300 border border-white/10">
+              <Icon className="w-8 h-8 text-theuyir-yellow mx-auto mb-3 group-hover:scale-110 transition-transform duration-300" />
+              <div className="text-2xl font-bold text-white mb-1 font-display">{value}</div>
+              <div className="text-sm text-gray-300 font-sans">{label}</div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute bottom-0 left-0 w-full">
-        <div className="h-1 bg-gradient-to-r from-theuyir-yellow via-theuyir-pink to-theuyir-yellow"></div>
-        <div className="h-24 bg-gradient-to-t from-theuyir-darkgrey to-transparent"></div>
-      </div>
-    </section>
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-theuyir-darkgrey to-transparent"></div>
+    </div>
   );
 };
 
