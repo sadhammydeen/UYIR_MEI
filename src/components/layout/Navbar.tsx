@@ -45,7 +45,7 @@ const Navbar = () => {
         isScrolled ? 'bg-white/95 backdrop-blur-sm shadow-md py-2' : 'bg-transparent py-4'
       }`}
     >
-      <div className="container mx-auto px-4 flex justify-between items-center">
+      <div className="container mx-auto px-4 flex justify-between items-center max-w-[100vw] overflow-x-hidden">
         <Link 
           to="/" 
           className="flex items-center transition-transform duration-300 hover:scale-105"
@@ -54,16 +54,16 @@ const Navbar = () => {
           <img 
             src="/lovable-uploads/b490f380-ac02-47bc-999e-0cb3e0c34afc.png" 
             alt="Uyir Mei" 
-            className="h-16 w-auto transition-all duration-300"
+            className="h-12 md:h-16 w-auto transition-all duration-300"
           />
-          <div className="ml-3">
-            <span className="block text-2xl font-bold text-theuyir-darkgrey tracking-wide">UYIR MEI</span>
-            <span className="text-xs text-theuyir-pink tracking-wider font-medium">CONNECTING COMPASSION</span>
+          <div className="ml-2 md:ml-3">
+            <span className="block text-xl md:text-2xl font-bold text-theuyir-darkgrey tracking-wide">UYIR MEI</span>
+            <span className="text-[10px] md:text-xs text-theuyir-pink tracking-wider font-medium">CONNECTING EMPATHY</span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
           {[
             { path: '/about', label: 'ABOUT US' },
             { path: '/services', label: 'WHAT WE DO' },
@@ -74,7 +74,7 @@ const Navbar = () => {
             <Link
               key={path}
               to={path} 
-              className={`nav-link relative overflow-hidden group ${location.pathname === path ? 'text-theuyir-pink' : ''}`}
+              className={`nav-link relative overflow-hidden group text-sm lg:text-base ${location.pathname === path ? 'text-theuyir-pink' : ''}`}
               onClick={() => handleNavigation(path)}
             >
               <span className="relative z-10">{label}</span>
@@ -84,7 +84,7 @@ const Navbar = () => {
           <Button 
             variant="default" 
             size="default" 
-            className="animate-pulse-soft transition-transform hover:scale-105"
+            className="animate-pulse-soft transition-transform hover:scale-105 text-sm lg:text-base"
           >
             DONATE
           </Button>
@@ -108,8 +108,8 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       <div 
-        className={`md:hidden bg-white/95 backdrop-blur-sm shadow-lg transition-all duration-300 ease-in-out ${
-          mobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+        className={`md:hidden bg-white/95 backdrop-blur-sm shadow-lg transition-all duration-300 ease-in-out fixed top-[72px] left-0 right-0 ${
+          mobileMenuOpen ? 'max-h-[calc(100vh-72px)] opacity-100' : 'max-h-0 opacity-0'
         } overflow-hidden`}
       >
         <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">

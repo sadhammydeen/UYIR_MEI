@@ -19,47 +19,47 @@ interface Story {
 const stories: Story[] = [
   {
     id: 1,
-    title: "A New Home, A New Beginning",
-    quote: "The support from Uyir Mei gave us more than just a roof over our heads. It gave us hope and a chance to rebuild our lives.",
-    name: "Priya and Family",
-    location: "Chennai",
-    image: "/lovable-uploads/56f47960-da89-4cc6-b87e-03285fefc9a5.png",
-    category: "Shelter",
-    date: "March 2024",
-    link: "/stories/shelter-hope"
-  },
-  {
-    id: 2,
-    title: "Education Opens Doors",
-    quote: "Thanks to the scholarship program, I can now pursue my dream of becoming a doctor. Every child deserves this opportunity.",
-    name: "Rajan",
-    location: "Madurai",
-    image: "https://images.unsplash.com/photo-1594708767771-a5e9d3012f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    category: "Education",
-    date: "February 2024",
-    link: "/stories/education-dreams"
-  },
-  {
-    id: 3,
-    title: "Healthcare for All",
-    quote: "The free medical camp organized by Uyir Mei provided me with the medication I couldn't afford. They truly care about our well-being.",
-    name: "Lakshmi",
-    location: "Coimbatore",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    title: "A Mother's Dream Realized",
+    quote: "When my daughter was diagnosed with cancer, I thought our world had ended. But Uyir Mei's support gave us hope. Today, she's cancer-free and pursuing her dream of becoming a doctor.",
+    name: "Lakshmi Devi",
+    location: "Chennai, Tamil Nadu",
+    image: "/lovable-uploads/medical-support.jpg",
     category: "Healthcare",
-    date: "January 2024",
+    date: "March 2025",
     link: "/stories/healthcare-hope"
   },
   {
-    id: 4,
-    title: "Skills for Success",
-    quote: "Learning computer skills has opened up new opportunities for me. I now work remotely and support my family.",
-    name: "Vikram",
-    location: "Trichy",
-    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    id: 2,
+    title: "From Street Vendor to Business Owner",
+    quote: "I used to sell vegetables on the street to feed my family. With Uyir Mei's skill development program, I learned digital marketing. Now I have my own online grocery store.",
+    name: "Ramesh Kumar",
+    location: "Mumbai, Maharashtra",
+    image: "/lovable-uploads/skill-development.jpg",
     category: "Skill Development",
-    date: "December 2023",
+    date: "February 2025",
     link: "/stories/skills-success"
+  },
+  {
+    id: 3,
+    title: "Education: A Path to Freedom",
+    quote: "As a child laborer, I never thought I'd see the inside of a classroom. Today, thanks to Uyir Mei's education initiative, I'm in college studying computer science.",
+    name: "Priya Sharma",
+    location: "Delhi",
+    image: "/lovable-uploads/education-support.jpg",
+    category: "Education",
+    date: "January 2025",
+    link: "/stories/education-dreams"
+  },
+  {
+    id: 4,
+    title: "A New Home, A New Life",
+    quote: "After losing everything in the floods, we had nowhere to go. Uyir Mei helped us rebuild our lives. Now we have a safe home and a small shop to support our family.",
+    name: "Rajesh and Family",
+    location: "Kerala",
+    image: "/lovable-uploads/housing-support.jpg",
+    category: "Shelter",
+    date: "December 2024",
+    link: "/stories/shelter-hope"
   }
 ];
 
@@ -130,27 +130,27 @@ const ImpactStories = () => {
   };
 
   return (
-    <section ref={storiesRef} className="py-20 bg-gradient-to-b from-gray-50 to-white opacity-0 translate-y-10 transition-all duration-1000">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+    <section ref={storiesRef} className="py-12 md:py-20 bg-gradient-to-b from-gray-50 to-white opacity-0 translate-y-10 transition-all duration-1000">
+      <div className="container mx-auto px-4 max-w-[100vw] overflow-x-hidden">
+        <div className="text-center mb-8 md:mb-16">
           <div 
-            className="bg-theuyir-yellow/10 text-theuyir-darkgrey text-sm font-semibold px-4 py-2 rounded-full inline-flex items-center mb-6 animate-fade-in opacity-0" 
+            className="bg-theuyir-yellow/10 text-theuyir-darkgrey text-sm font-semibold px-4 py-2 rounded-full inline-flex items-center mb-4 md:mb-6 animate-fade-in opacity-0" 
             style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}
           >
             <Heart className="w-4 h-4 mr-2" />
-            Impact Stories
+            Stories of Hope
           </div>
           <h2 
-            className="text-3xl md:text-4xl font-bold text-theuyir-darkgrey mb-6 animate-fade-in opacity-0" 
+            className="text-2xl md:text-3xl lg:text-4xl font-bold text-theuyir-darkgrey mb-4 md:mb-6 animate-fade-in opacity-0" 
             style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}
           >
             Real Stories, Real Impact
           </h2>
           <p 
-            className="text-gray-600 max-w-2xl mx-auto text-lg animate-fade-in opacity-0" 
+            className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto animate-fade-in opacity-0" 
             style={{ animationDelay: '0.7s', animationFillMode: 'forwards' }}
           >
-            Every day, lives are being transformed through the power of community support. Here are some of the stories that inspire us to keep making a difference.
+            Every story represents a life transformed through the power of community support. These are real people, real struggles, and real victories that inspire us to keep making a difference.
           </p>
         </div>
 
@@ -160,7 +160,7 @@ const ImpactStories = () => {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+          <div className="relative overflow-hidden rounded-xl md:rounded-2xl shadow-xl md:shadow-2xl">
             <div 
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${activeIndex * 100}%)` }}
@@ -174,35 +174,35 @@ const ImpactStories = () => {
                     <img
                       src={story.image}
                       alt={story.title}
-                      className="w-full h-[400px] object-cover"
+                      className="w-full h-[300px] md:h-[400px] object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                      <div className="flex items-center gap-4 mb-4">
-                        <span className="bg-theuyir-yellow text-black text-sm font-semibold px-3 py-1 rounded-full">
+                    <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 text-white">
+                      <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-2 md:mb-4">
+                        <span className="bg-theuyir-yellow text-black text-xs md:text-sm font-semibold px-2 md:px-3 py-1 rounded-full">
                           {story.category}
                         </span>
-                        <div className="flex items-center text-white/80 text-sm">
-                          <MapPin className="w-4 h-4 mr-1" />
+                        <div className="flex items-center text-white/80 text-xs md:text-sm">
+                          <MapPin className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                           {story.location}
                         </div>
-                        <div className="flex items-center text-white/80 text-sm">
-                          <Calendar className="w-4 h-4 mr-1" />
+                        <div className="flex items-center text-white/80 text-xs md:text-sm">
+                          <Calendar className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                           {story.date}
                         </div>
                       </div>
-                      <h3 className="text-2xl font-bold mb-4">{story.title}</h3>
-                      <blockquote className="text-lg mb-6 italic">"{story.quote}"</blockquote>
+                      <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-4">{story.title}</h3>
+                      <blockquote className="text-base md:text-lg mb-4 md:mb-6 italic">"{story.quote}"</blockquote>
                       <div className="flex items-center justify-between">
-                        <p className="font-semibold">- {story.name}</p>
+                        <p className="font-semibold text-sm md:text-base">- {story.name}</p>
                         <Link 
                           to={story.link}
                           onClick={() => handleNavigation(story.link)}
-                          className="inline-flex items-center text-theuyir-yellow hover:text-theuyir-yellow/80 transition-colors duration-300"
+                          className="inline-flex items-center text-theuyir-yellow hover:text-theuyir-yellow/80 transition-colors duration-300 text-sm md:text-base"
                         >
                           Read Full Story
                           <ArrowRight 
-                            size={16} 
+                            size={14} 
                             className="ml-1 transition-transform duration-300 group-hover:translate-x-1" 
                           />
                         </Link>
@@ -216,23 +216,23 @@ const ImpactStories = () => {
 
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white p-2 rounded-full hover:bg-white/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white p-1.5 md:p-2 rounded-full hover:bg-white/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isAnimating}
             aria-label="Previous story"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={20} className="md:w-6 md:h-6" />
           </button>
 
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white p-2 rounded-full hover:bg-white/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white p-1.5 md:p-2 rounded-full hover:bg-white/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isAnimating}
             aria-label="Next story"
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={20} className="md:w-6 md:h-6" />
           </button>
 
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 md:gap-2">
             {stories.map((_, index) => (
               <button
                 key={index}
@@ -242,8 +242,8 @@ const ImpactStories = () => {
                   setActiveIndex(index);
                   setTimeout(() => setIsAnimating(false), 500);
                 }}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === activeIndex ? 'bg-theuyir-yellow w-4' : 'bg-white/50 hover:bg-white/80'
+                className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full transition-all duration-300 ${
+                  index === activeIndex ? 'bg-theuyir-yellow w-3 md:w-4' : 'bg-white/50 hover:bg-white/80'
                 }`}
                 aria-label={`Go to story ${index + 1}`}
               />

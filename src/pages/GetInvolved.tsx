@@ -1,13 +1,11 @@
-
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { 
   ArrowRight, Clock, Heart, Star, MapPin, Calendar, 
   Briefcase, GraduationCap, FileText, CheckCircle, User,
   Users 
 } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 
 const GetInvolved = () => {
   const [activeTab, setActiveTab] = useState('volunteer');
@@ -194,9 +192,15 @@ const GetInvolved = () => {
                       <span className="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">Weekday Evenings</span>
                     </div>
                     
-                    <Button variant="primary" size="md" fullWidth className="group">
-                      Apply Now <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-                    </Button>
+                    <div className="flex flex-wrap gap-4 mb-8">
+                      <Button variant="default" size="lg" className="flex items-center">
+                        Apply Now
+                        <ArrowRight className="ml-2" />
+                      </Button>
+                      <Button variant="outline" size="lg">
+                        Learn More
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 
@@ -234,9 +238,15 @@ const GetInvolved = () => {
                       <span className="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">Weekend Mornings</span>
                     </div>
                     
-                    <Button variant="primary" size="md" fullWidth className="group">
-                      Apply Now <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-                    </Button>
+                    <div className="flex flex-wrap gap-4 mb-8">
+                      <Button variant="default" size="lg" className="flex items-center">
+                        Apply Now
+                        <ArrowRight className="ml-2" />
+                      </Button>
+                      <Button variant="outline" size="lg">
+                        Learn More
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 
@@ -274,9 +284,15 @@ const GetInvolved = () => {
                       <span className="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">One-Week Commitment</span>
                     </div>
                     
-                    <Button variant="primary" size="md" fullWidth className="group">
-                      Apply Now <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-                    </Button>
+                    <div className="flex flex-wrap gap-4 mb-8">
+                      <Button variant="default" size="lg" className="flex items-center">
+                        Apply Now
+                        <ArrowRight className="ml-2" />
+                      </Button>
+                      <Button variant="outline" size="lg">
+                        Learn More
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -444,9 +460,16 @@ const GetInvolved = () => {
                       </label>
                     </div>
                     
-                    <Button variant="primary" size="lg" fullWidth type="submit">
-                      Submit Registration
-                    </Button>
+                    <div className="mt-8">
+                      <Button 
+                        variant="default" 
+                        size="lg" 
+                        type="submit"
+                        className="w-full"
+                      >
+                        Submit Registration
+                      </Button>
+                    </div>
                   </form>
                 </div>
               </div>
@@ -596,9 +619,16 @@ const GetInvolved = () => {
                       </label>
                     </div>
                     
-                    <Button variant="primary" size="lg" fullWidth type="submit">
-                      Submit Application
-                    </Button>
+                    <div className="mt-8">
+                      <Button 
+                        variant="default" 
+                        size="lg" 
+                        type="submit"
+                        className="w-full"
+                      >
+                        Submit Application
+                      </Button>
+                    </div>
                   </form>
                 </div>
                 
@@ -669,7 +699,7 @@ const GetInvolved = () => {
               together we can create meaningful change in our communities.
             </p>
             <div className="flex flex-wrap justify-center gap-4 fade-in-section opacity-0" style={{ animationDelay: '0.4s' }}>
-              <Button variant="primary" size="lg">
+              <Button variant="default" size="lg">
                 Get Started Now
               </Button>
               <Button size="lg" className="bg-white text-theuyir-pink hover:bg-white/90">
@@ -679,8 +709,6 @@ const GetInvolved = () => {
           </div>
         </section>
       </main>
-      
-      <Footer />
     </div>
   );
 };

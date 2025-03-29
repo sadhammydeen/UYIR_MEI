@@ -1,6 +1,4 @@
 import React, { useEffect } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { ArrowRight, BookOpen, Utensils, Home, Stethoscope, GraduationCap, LifeBuoy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -65,9 +63,7 @@ const Services = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      
+    <div>
       <main className="flex-grow pt-24">
         {/* Hero Section */}
         <section className="relative py-20 bg-theuyir-darkgrey text-white overflow-hidden">
@@ -344,8 +340,6 @@ const Services = () => {
           </div>
         </section>
       </main>
-      
-      <Footer />
     </div>
   );
 };

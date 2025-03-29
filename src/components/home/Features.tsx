@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLoading } from '@/contexts/LoadingContext';
-import { Heart, Users, Building2, HandHeart, ArrowRight } from 'lucide-react';
+import { Heart, Users, Building2, HandHeart, ArrowRight, GraduationCap, Home, Stethoscope } from 'lucide-react';
 
 const Features = () => {
   const { setIsLoading, setLoadingText } = useLoading();
@@ -17,32 +17,32 @@ const Features = () => {
 
   const features = [
     {
-      icon: Heart,
-      title: "For Those in Need",
-      description: "Find support and resources through our network of verified NGOs and volunteers.",
+      icon: GraduationCap,
+      title: "Education for All",
+      description: "Every child deserves quality education. We provide scholarships, school supplies, and support to help children break free from the cycle of poverty.",
       link: "/services",
-      action: "Get Help"
+      action: "Support Education"
     },
     {
-      icon: Building2,
-      title: "For NGOs",
-      description: "Join our platform to expand your reach and connect with donors and volunteers.",
+      icon: Stethoscope,
+      title: "Healthcare Access",
+      description: "Health is a fundamental right. We organize medical camps, provide essential medicines, and ensure healthcare reaches the most vulnerable.",
       link: "/services",
-      action: "Partner With Us"
+      action: "Support Healthcare"
     },
     {
-      icon: HandHeart,
-      title: "For Donors",
-      description: "Make transparent and impactful donations to verified causes and organizations.",
+      icon: Home,
+      title: "Safe Shelter",
+      description: "A safe home is the foundation of a better life. We help families rebuild their lives with dignity through our housing initiatives.",
       link: "/give",
-      action: "Make a Difference"
+      action: "Support Housing"
     },
     {
       icon: Users,
-      title: "For Volunteers",
-      description: "Contribute your time and skills to meaningful projects in your community.",
+      title: "Community Development",
+      description: "Strong communities create lasting change. Join us in building sustainable solutions that empower entire communities to thrive.",
       link: "/get-involved",
-      action: "Join Our Team"
+      action: "Join Our Mission"
     }
   ];
 
@@ -53,11 +53,11 @@ const Features = () => {
 
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-theuyir-yellow via-theuyir-pink to-theuyir-yellow bg-clip-text text-transparent">
-            How We Make a Difference
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-theuyir-yellow via-theuyir-pink to-theuyir-yellow bg-clip-text text-transparent font-display">
+            Our Impact Areas
           </h2>
-          <p className="text-xl text-gray-300 leading-relaxed">
-            Our platform connects different stakeholders in the social impact ecosystem, making it easier for everyone to contribute to positive change.
+          <p className="text-xl text-gray-300 leading-relaxed font-sans">
+            We believe in creating lasting change through comprehensive support systems. Our initiatives touch every aspect of life, from education to healthcare, ensuring no one is left behind.
           </p>
         </div>
 
@@ -70,8 +70,8 @@ const Features = () => {
               <div className="mb-4">
                 <feature.icon className="w-12 h-12 text-theuyir-yellow transition-transform duration-300 group-hover:scale-110" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-              <p className="text-gray-300 mb-6 leading-relaxed">{feature.description}</p>
+              <h3 className="text-xl font-semibold mb-3 font-display">{feature.title}</h3>
+              <p className="text-gray-300 mb-6 leading-relaxed font-sans">{feature.description}</p>
               <Link
                 to={feature.link}
                 onClick={() => handleNavigation(feature.link)}
@@ -90,7 +90,7 @@ const Features = () => {
             onClick={() => handleNavigation('/about')}
             className="inline-flex items-center text-theuyir-yellow hover:text-theuyir-pink transition-colors duration-300 font-medium group"
           >
-            Learn more about our approach
+            Learn about our impact
             <ArrowRight className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>

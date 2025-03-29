@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { ArrowRight, Users, Award, Heart, Calendar, Twitter, Linkedin, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -273,7 +272,7 @@ const About = () => {
               Whether you want to volunteer, donate, or partner with us as an NGO, there are many ways to get involved and make a difference.
             </p>
             <div className="flex flex-wrap justify-center gap-4 fade-in-section opacity-0" style={{ animationDelay: '0.4s' }}>
-              <Button variant="primary" size="lg">
+              <Button variant="default" size="lg">
                 Get Involved
               </Button>
               <Button size="lg" className="bg-white text-theuyir-pink hover:bg-white/90">
@@ -283,8 +282,6 @@ const About = () => {
           </div>
         </section>
       </main>
-      
-      <Footer />
     </div>
   );
 };
