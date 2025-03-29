@@ -1,9 +1,8 @@
-
 import React, { useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { ArrowRight, BookOpen, Utensils, Home, Stethoscope, GraduationCap, LifeBuoy } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 
 const ServiceCard = ({ icon, title, description, color }: { icon: React.ReactNode, title: string, description: string, color: string }) => {
   return (
@@ -31,7 +30,7 @@ const ServiceCard = ({ icon, title, description, color }: { icon: React.ReactNod
             <span className="text-gray-600">Volunteer coordination</span>
           </li>
         </ul>
-        <Button variant="primary" size="md" className="mt-6 w-full group">
+        <Button variant="default" size="default" className="mt-6 w-full group">
           Learn More <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
         </Button>
       </div>

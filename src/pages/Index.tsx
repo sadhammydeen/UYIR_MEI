@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Hero from '@/components/home/Hero';
 import Features from '@/components/home/Features';
 import ImpactStories from '@/components/home/ImpactStories';
-import Button from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { useLoading } from '@/contexts/LoadingContext';
 
 const Index = () => {
@@ -153,7 +153,7 @@ const Index = () => {
                       </div>
                     </div>
                     
-                    <Button variant="primary" size="md" fullWidth>
+                    <Button variant="default" size="default" className="w-full">
                       Donate Now
                     </Button>
                   </div>
@@ -206,7 +206,7 @@ const Index = () => {
                 </div>
                 
                 <Link to="/get-involved" onClick={() => handleNavigation('/get-involved')}>
-                  <Button variant="primary" size="lg" className="group">
+                  <Button variant="default" size="lg" className="group">
                     Join as Volunteer
                     <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
                   </Button>

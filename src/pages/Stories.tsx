@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { ArrowRight, Search, Tag, Calendar, User, Heart, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 
 const StoryCard = ({ 
   image, 
@@ -68,7 +67,7 @@ const StoryCard = ({
             </div>
           </div>
           
-          <Button variant="outline" size="sm" className="group-hover:bg-theuyir-pink group-hover:text-white group-hover:border-theuyir-pink transition-all duration-300">
+          <Button variant="default" size="sm" className="group-hover:bg-theuyir-pink group-hover:text-white group-hover:border-theuyir-pink transition-all duration-300">
             Read More <ArrowRight size={14} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </div>

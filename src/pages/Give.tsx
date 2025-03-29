@@ -5,7 +5,7 @@ import {
   ArrowRight, Heart, CreditCard, Wallet, 
   DollarSign, Calendar, Gift, ShieldCheck, Clock 
 } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 
 const Give = () => {
   const [donationAmount, setDonationAmount] = useState<number | string>('');
@@ -155,7 +155,7 @@ const Give = () => {
                       </div>
                     </div>
                     
-                    <Button variant="primary" size="lg" fullWidth className="group">
+                    <Button variant="default" size="lg" className="w-full group">
                       Proceed to Payment <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                     </Button>
                   </div>

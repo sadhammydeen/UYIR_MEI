@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Home, ArrowLeft } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 
 const NotFound = () => {
   const location = useLocation();
@@ -26,7 +26,7 @@ const NotFound = () => {
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
-            variant="primary"
+            variant="default"
             size="lg"
             className="group"
             onClick={() => window.history.back()}
@@ -35,13 +35,8 @@ const NotFound = () => {
             Go Back
           </Button>
           <Link to="/">
-            <Button
-              variant="outline"
-              size="lg"
-              className="group"
-            >
-              <Home className="mr-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              Return Home
+            <Button variant="default" className="mt-4">
+              <Home className="mr-2" /> Back to Home
             </Button>
           </Link>
         </div>
