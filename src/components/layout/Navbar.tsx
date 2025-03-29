@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Search } from 'lucide-react';
-import Button from '../ui/Button';
+import { Button } from '@/components/ui/button';
 import { useLoading } from '@/contexts/LoadingContext';
 
 const Navbar = () => {
@@ -82,8 +82,8 @@ const Navbar = () => {
             </Link>
           ))}
           <Button 
-            variant="primary" 
-            size="md" 
+            variant="default" 
+            size="default" 
             className="animate-pulse-soft transition-transform hover:scale-105"
           >
             DONATE
@@ -132,7 +132,7 @@ const Navbar = () => {
             </Link>
           ))}
           <div className="flex items-center justify-between pt-2">
-            <Button variant="primary" size="md" fullWidth>DONATE</Button>
+            <Button variant="default" size="default" className="w-full">DONATE</Button>
             <button 
               className="ml-4 text-theuyir-darkgrey hover:text-theuyir-pink"
               aria-label="Search"
