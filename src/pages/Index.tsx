@@ -171,6 +171,26 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {/* Help Make a Difference Section */}
+        <section className="py-24 bg-gray-50 text-center fade-in-section">
+          <h2 className="text-3xl font-bold mb-4">Help Make a Difference</h2>
+          <p className="max-w-2xl mx-auto mb-8">
+            We believe every small act can transform lives. Join us in creating meaningful change for our communities.
+          </p>
+          <div className="flex items-center justify-center space-x-4">
+            <Link to="/get-involved">
+              <button className="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition-colors">
+                Get Involved
+              </button>
+            </Link>
+            <Link to="/give">
+              <button className="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition-colors">
+                Give Support
+              </button>
+            </Link>
+          </div>
+        </section>
         
         <ImpactStories />
         

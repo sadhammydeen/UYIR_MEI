@@ -53,7 +53,7 @@ const About = () => {
                 Our <span className="yellow-highlight">Mission</span> and Vision
               </h1>
               <p className="text-white/80 text-lg mb-8">
-                Since 2023, Uyir Mei has been working to create a more equitable society by connecting those in need with those who can help, through innovative technology and compassionate action.
+                Since 2025, Uyir Mei has been working to create a more equitable society by connecting those in need with those who can help, through innovative technology and compassionate action.
               </p>
             </div>
           </div>
@@ -77,7 +77,7 @@ const About = () => {
                   Our founder, witnessing both the struggles of underprivileged communities and the willingness of people to help, envisioned a platform that could bridge this divide. Thus, Uyir Mei was born—a technology-driven solution that connects beneficiaries directly with donors, volunteers, and NGOs.
                 </p>
                 <Button variant="secondary" size="lg" className="group">
-                  Meet Our Team <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                  Meet Our Team 
                 </Button>
               </div>
               
@@ -89,7 +89,7 @@ const About = () => {
                 />
                 <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg">
                   <p className="font-bold text-theuyir-darkgrey">Founded</p>
-                  <p className="text-3xl font-bold text-theuyir-pink">2023</p>
+                  <p className="text-3xl font-bold text-theuyir-pink">2025</p>
                 </div>
               </div>
             </div>
@@ -187,7 +187,7 @@ const About = () => {
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-1 text-theuyir-darkgrey">Rajesh Kumar</h3>
+                  <h3 className="text-xl font-bold mb-1 text-theuyir-darkgrey">Sadham Mydeen</h3>
                   <p className="text-theuyir-pink font-medium mb-3">Founder & CEO</p>
                   <p className="text-gray-600">Former tech executive with 15+ years of experience, dedicated to leveraging technology for social good.</p>
                 </div>
@@ -217,7 +217,7 @@ const About = () => {
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-1 text-theuyir-darkgrey">Priya Sharma</h3>
+                  <h3 className="text-xl font-bold mb-1 text-theuyir-darkgrey">Anshu Baby</h3>
                   <p className="text-theuyir-pink font-medium mb-3">Operations Director</p>
                   <p className="text-gray-600">NGO management specialist with expertise in program development and community engagement.</p>
                 </div>
@@ -247,18 +247,18 @@ const About = () => {
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-1 text-theuyir-darkgrey">Arjun Nair</h3>
+                  <h3 className="text-xl font-bold mb-1 text-theuyir-darkgrey">Babul Bishwas</h3>
                   <p className="text-theuyir-pink font-medium mb-3">Technology Lead</p>
                   <p className="text-gray-600">Full-stack developer with a passion for creating intuitive, accessible digital platforms for social impact.</p>
                 </div>
               </div>
             </div>
             
-            <div className="text-center mt-12 fade-in-section opacity-0">
+            {/*<div className="text-center mt-12 fade-in-section opacity-0">
               <Button variant="outline" size="lg" className="border-theuyir-darkgrey text-theuyir-darkgrey">
                 View Full Team
               </Button>
-            </div>
+            </div>*/}
           </div>
         </section>
         
