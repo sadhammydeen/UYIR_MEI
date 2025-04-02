@@ -100,7 +100,7 @@ const Index = () => {
         <Hero />
         <Features />
         
-        {/* Needs Section */}
+        {/* Needs Section 
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16 fade-in-section opacity-0">
@@ -170,7 +170,7 @@ const Index = () => {
               </Link>
             </div>
           </div>
-        </section>
+        </section>*/}
 
         {/* Help Make a Difference Section */}
         <section className="py-24 bg-gray-50 text-center fade-in-section">
