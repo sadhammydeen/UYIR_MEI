@@ -1,46 +1,42 @@
 import os
-from flask import Flask, request, jsonify
+import time
+import json
+import re
+import hashlib
+from datetime import datetime
+from flask import Flask, request, jsonify, Response, stream_with_context
 from flask_cors import CORS
+import google.generativeai as genai
 import requests
 from dotenv import load_dotenv
-import json
-import time
-import re
-from datetime import datetime
-import hashlib
 
-# Load environment variables
+# Load environment variables from .env
 load_dotenv()
 
-# Initialize Flask app
+# Initialize Flask app and enable CORS
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
-# Response cache
+# Configure Google Generative AI with your API key and initialize the model
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+model = genai.GenerativeModel(
+    model_name="gemini-2.0-flash"
+)
+# ---- Global Variables for Caching ----
 response_cache = {}
-CACHE_TIMEOUT = 3600  # 1 hour
+CACHE_TIMEOUT = 3600  # seconds
 
-# Simple status endpoint for connection check
-@app.route('/api/status', methods=['GET'])
-def status():
-    return jsonify({
-        "status": "online", 
-        "service": "Chol (சொல்) AI Backend",
-        "version": "2.0.0",
-        "features": ["Knowledge Base", "Web Resources", "Response Caching", "Sentiment Analysis"]
-    }), 200
+# ---- Helper Functions ----
 
-# Analyze sentiment of the query
 def analyze_sentiment(query):
-    # Simple sentiment analysis based on keywords
+    """Simple sentiment analysis based on keyword counts."""
     query_lower = query.lower()
-    
     positive_words = ["thank", "good", "great", "excellent", "appreciate", "help", "love", "like"]
     negative_words = ["bad", "poor", "terrible", "unhelpful", "hate", "dislike", "worst"]
-    
+
     positive_score = sum(1 for word in positive_words if word in query_lower)
     negative_score = sum(1 for word in negative_words if word in query_lower)
-    
+
     if positive_score > negative_score:
         return "positive"
     elif negative_score > positive_score:
@@ -48,39 +44,31 @@ def analyze_sentiment(query):
     else:
         return "neutral"
 
-# Check the knowledge base for an answer to the query
 def check_knowledge_base(query):
+    """Check the local knowledge base (if available) for an answer."""
     try:
-        # Load knowledge base from file
         with open('knowledge_base.json', 'r') as file:
             knowledge_base = json.load(file)
-        
-        query = query.lower()
-        
-        # Check for matches in our knowledge base
-        for topic, keywords in knowledge_base["topic_keywords"].items():
-            # Check if any of the keywords match the query
-            if any(keyword in query for keyword in keywords):
-                if topic in knowledge_base["knowledge_base"]:
+        query_lower = query.lower()
+        for topic, keywords in knowledge_base.get("topic_keywords", {}).items():
+            if any(keyword in query_lower for keyword in keywords):
+                if topic in knowledge_base.get("knowledge_base", {}):
+                    kb_entry = knowledge_base["knowledge_base"][topic]
                     return {
-                        "text": knowledge_base["knowledge_base"][topic]["text"],
-                        "links": knowledge_base["knowledge_base"][topic].get("links", []),
+                        "text": kb_entry.get("text", ""),
+                        "links": kb_entry.get("links", []),
                         "source": "kb"
                     }
-        
         return None
     except Exception as e:
         print(f"Error checking knowledge base: {e}")
         return None
 
-# Enhanced web resources search
 def search_web_resources(query):
-    # This would be replaced with a real search function in production
-    time.sleep(0.5)  # Reduced simulation delay for better UX
-    
+    """Simulated web resources search for fallback information."""
+    time.sleep(0.5)  # simulate delay
     query_lower = query.lower()
     
-    # Enhanced results with multiple resources per topic
     if "donate" in query_lower:
         return [
             {
@@ -151,157 +139,67 @@ def search_web_resources(query):
     else:
         return []
 
-# Generate cache key from the query and recent conversation history
 def generate_cache_key(query, messages):
-    # Use the query and last 2 messages to maintain context
-    recent_messages = []
-    if messages and len(messages) > 0:
-        recent_messages = messages[-2:] if len(messages) >= 2 else messages
-    
+    """Generate a cache key using the query and the last two messages of conversation."""
+    recent_messages = messages[-2:] if messages and len(messages) >= 2 else messages or []
     context = '|'.join([msg.get('text', '') for msg in recent_messages])
     combined = f"{query.lower().strip()}|{context}"
-    
     return hashlib.md5(combined.encode()).hexdigest()
 
-# Get response from a free Hugging Face API with enhancements
 def get_ai_response(messages, query):
+    """Get an AI response by checking the knowledge base, then querying the Gemini model, and finally applying enhancements."""
     try:
-        # Check cache first
         cache_key = generate_cache_key(query, messages)
         if cache_key in response_cache and (time.time() - response_cache[cache_key]['timestamp']) < CACHE_TIMEOUT:
             print("Cache hit for query:", query)
             return response_cache[cache_key]['data']
         
-        # First check if we have a direct answer in our knowledge base
+        # Check if a direct answer exists in the knowledge base
         kb_response = check_knowledge_base(query)
         if kb_response:
-            # Store in cache
-            response_cache[cache_key] = {
-                'data': kb_response,
-                'timestamp': time.time()
-            }
+            response_cache[cache_key] = {'data': kb_response, 'timestamp': time.time()}
             return kb_response
-            
-        # Get sentiment to enhance response appropriately
+
+        # Analyze sentiment
         sentiment = analyze_sentiment(query)
         
-        # Format the prompt with chat history (last 3 messages for context)
-        prompt = "You are Chol (சொல்), an AI assistant for Uyir Mei, a non-profit organization focused on community service in India. Provide helpful, accurate, and compassionate information about our services, donation options, volunteer opportunities, and other related inquiries. Keep responses concise and focused.\n\n"
+        # Prepare chat history (ensure messages is a list of dicts with 'sender' and 'text')
+        chat_history = messages if messages else []
         
-        # Add recent chat history
-        history_messages = messages[-3:] if len(messages) > 3 else messages
-        for msg in history_messages:
-            role = "Assistant" if msg["sender"] == "bot" else "User"
-            prompt += f"{role}: {msg['text']}\n"
+        # Start a chat session with the Gemini model (uses chat history if provided)
+        chat_session = model.start_chat(history=chat_history)
+        response = chat_session.send_message(query)
+        ai_text = response.text
+
+        # If the AI response signals uncertainty, try offering web resources instead
+        if any(phrase in ai_text.lower() for phrase in ["i don't know", "i'm not sure"]):
+            web_resources = search_web_resources(query)
+            if web_resources:
+                web_response = {
+                    "text": "I found some resources that might help answer your question:",
+                    "links": web_resources,
+                    "source": "web",
+                    "sentiment": sentiment
+                }
+                response_cache[cache_key] = {'data': web_response, 'timestamp': time.time()}
+                return web_response
+
+        # Enhance response based on sentiment
+        if sentiment == "positive":
+            ai_text += " I'm glad I could help! Is there anything else you'd like to know about Uyir Mei?"
+        elif sentiment == "negative":
+            ai_text = "I understand your concern. " + ai_text + " Please let me know if there's another way I can assist you."
         
-        # Add the current query
-        prompt += f"User: {query}\nAssistant: "
-        
-        # Call the free HuggingFace Inference API
-        API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill"
-        headers = {"Content-Type": "application/json"}
-        
-        payload = {
-            "inputs": prompt,
-            "parameters": {
-                "max_new_tokens": 250,
-                "temperature": 0.7,
-                "return_full_text": False
-            },
-            "options": {
-                "wait_for_model": True
-            }
-        }
-        
-        response = requests.post(API_URL, headers=headers, json=payload)
-        
-        if response.status_code == 200:
-            result = response.json()
-            ai_response = result[0]["generated_text"] if isinstance(result, list) and len(result) > 0 else "I'm not sure how to respond to that."
-            
-            # Clean up the response if needed
-            if ai_response.startswith("Assistant: "):
-                ai_response = ai_response[len("Assistant: "):]
-                
-            # If the AI response indicates uncertainty or if query explicitly asks for resources
-            if "I don't know" in ai_response.lower() or "I'm not sure" in ai_response.lower() or "resources" in query.lower():
-                web_resources = search_web_resources(query)
-                if web_resources:
-                    web_response = {
-                        "text": "I found some resources that might help answer your question:",
-                        "links": web_resources,
-                        "source": "web",
-                        "sentiment": sentiment
-                    }
-                    # Save to cache
-                    response_cache[cache_key] = {
-                        'data': web_response,
-                        'timestamp': time.time()
-                    }
-                    return web_response
-            
-            # Enhance the response based on sentiment
-            if sentiment == "positive":
-                ai_response += " I'm glad I could help! Is there anything else you'd like to know about Uyir Mei?"
-            elif sentiment == "negative":
-                ai_response = "I understand your concern. " + ai_response + " Please let me know if there's a different way I can assist you."
-            
-            api_response = {
-                "text": ai_response,
-                "source": "ai",
-                "sentiment": sentiment
-            }
-            
-            # Store in cache
-            response_cache[cache_key] = {
-                'data': api_response,
-                'timestamp': time.time()
-            }
-            
-            # Limit cache size
-            if len(response_cache) > 100:  # Prevent excessive memory usage
-                # Remove oldest entries
-                oldest_key = min(response_cache.keys(), key=lambda k: response_cache[k]['timestamp'])
-                del response_cache[oldest_key]
-                
-            return api_response
-        else:
-            # Fallback to simple response if API fails
-            print(f"API call failed with status code: {response.status_code}")
-            
-            # Create a more helpful fallback response based on the query content
-            query_terms = query.lower().split()
-            fallback_topics = []
-            
-            if any(term in ["donate", "donation", "give", "money"] for term in query_terms):
-                fallback_topics.append("donation options")
-            if any(term in ["volunteer", "help", "time"] for term in query_terms):
-                fallback_topics.append("volunteering opportunities")
-            if any(term in ["service", "program", "assistance"] for term in query_terms):
-                fallback_topics.append("our services")
-            if any(term in ["contact", "reach", "email", "call"] for term in query_terms):
-                fallback_topics.append("contact information")
-            
-            if fallback_topics:
-                topic_text = ", ".join(fallback_topics[:-1])
-                if len(fallback_topics) > 1:
-                    topic_text += f" and {fallback_topics[-1]}"
-                else:
-                    topic_text = fallback_topics[0]
-                
-                fallback_text = f"I understand you want to know about {topic_text}. You can find detailed information on our website or by calling our helpline at +91-XXXXXXXX."
-            else:
-                fallback_text = "I understand you want to know about " + query + ". Let me provide some general information. Uyir Mei offers services in education, healthcare, and community development. Please check our website for specific details or ask a more specific question."
-            
-            fallback_response = {
-                "text": fallback_text,
-                "source": "fallback",
-                "sentiment": sentiment
-            }
-            
-            # Don't cache fallback responses from API failures
-            return fallback_response
-            
+        api_response = {"text": ai_text, "source": "ai", "sentiment": sentiment}
+        response_cache[cache_key] = {'data': api_response, 'timestamp': time.time()}
+
+        # Optional: Limit cache size by removing the oldest entry if too many items are stored
+        if len(response_cache) > 100:
+            oldest_key = min(response_cache, key=lambda k: response_cache[k]['timestamp'])
+            del response_cache[oldest_key]
+
+        return api_response
+
     except Exception as e:
         print(f"Error getting AI response: {e}")
         return {
@@ -309,8 +207,21 @@ def get_ai_response(messages, query):
             "source": "error"
         }
 
+# ---- API Endpoints ----
+
+@app.route('/api/status', methods=['GET'])
+def status():
+    """Simple status endpoint for connection check."""
+    return jsonify({
+        "status": "online", 
+        "service": "Chol (சொல்) AI Backend",
+        "version": "2.0.0",
+        "features": ["Knowledge Base", "Web Resources", "Response Caching", "Sentiment Analysis"]
+    }), 200
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
+    """Processes user chat requests and returns AI-generated responses."""
     try:
         data = request.json
         user_input = data.get('message')
@@ -319,12 +230,10 @@ def chat():
         if not user_input:
             return jsonify({"error": "No message provided"}), 400
             
-        response = get_ai_response(messages, user_input)
+        response_data = get_ai_response(messages, user_input)
+        response_data['timestamp'] = datetime.now().isoformat()
         
-        # Add timestamp for the client
-        response['timestamp'] = datetime.now().isoformat()
-        
-        return jsonify(response), 200
+        return jsonify(response_data), 200
         
     except Exception as e:
         print(f"Error in chat endpoint: {e}")
@@ -334,19 +243,34 @@ def chat():
             "timestamp": datetime.now().isoformat()
         }), 500
 
-# Statistics endpoint
 @app.route('/api/stats', methods=['GET'])
 def stats():
+    """Returns basic statistics about the service."""
     try:
         return jsonify({
             "cache_size": len(response_cache),
-            "cache_hit_ratio": "N/A",  # Would track this properly in production
-            "uptime": "N/A",  # Would track this properly in production
+            "cache_hit_ratio": "N/A",  # For production, implement proper tracking
+            "uptime": "N/A",
             "version": "2.0.0"
         }), 200
     except Exception as e:
         print(f"Error in stats endpoint: {e}")
         return jsonify({"error": "Could not retrieve stats"}), 500
 
+@app.route('/stream', methods=['POST'])
+def stream():
+    """Streams AI responses for real-time chat interactions using the Gemini model."""
+    def generate():
+        data = request.json
+        msg = data.get('chat', '')
+        chat_history = data.get('history', [])
+        chat_session = model.start_chat(history=chat_history)
+        response = chat_session.send_message(msg, stream=True)
+        for chunk in response:
+            yield f"{chunk.text}"
+    return Response(stream_with_context(generate()), mimetype="text/event-stream")
+
+# ---- Run the Server ----
 if __name__ == '__main__':
-    app.run(debug=True, port=5001) 
+    # Port can be set via the PORT environment variable; default to 5001 if not provided.
+    app.run(debug=True, port=int(os.getenv("PORT", 5001)))
