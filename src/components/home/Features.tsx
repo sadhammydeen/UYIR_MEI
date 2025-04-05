@@ -86,8 +86,8 @@ const Features = () => {
 
         <div className="text-center mt-16">
           <Link
-            to="/about"
-            onClick={() => handleNavigation('/about')}
+            to="/stories"
+            onClick={() => handleNavigation('/stories')}
             className="inline-flex items-center text-theuyir-yellow hover:text-theuyir-pink transition-colors duration-300 font-medium group"
           >
             Learn about our impact
