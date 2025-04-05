@@ -1,6 +1,6 @@
 # To view the API logs of Chatbot
 
-TO view basic GET/POST logs and edit the chatbot
+To view basic GET/POST logs and edit the chatbot
 
 ## Prerequisites
 
