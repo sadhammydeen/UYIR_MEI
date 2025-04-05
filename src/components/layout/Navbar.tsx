@@ -52,7 +52,7 @@ const Navbar = () => {
           onClick={() => handleNavigation('/')}
         >
           <img 
-            src="/lovable-uploads/b490f380-ac02-47bc-999e-0cb3e0c34afc.png" 
+            src="/images/logos/uyir-mei-logo.png" 
             alt="Uyir Mei" 
             className="h-12 md:h-16 w-auto transition-all duration-300"
           />

@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { 
   ArrowRight, Heart, CreditCard, Wallet, 
-  DollarSign, Calendar, Gift, ShieldCheck, Clock 
+  DollarSign, Calendar, Gift, ShieldCheck, Clock, Repeat 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Input } from '@/components/ui/input';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import PaymentMethodLogos from '@/components/shared/PaymentMethodLogos';
 
 const Give = () => {
   const [donationAmount, setDonationAmount] = useState<number | string>('');
@@ -48,15 +52,13 @@ const Give = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      
-      <main className="flex-grow pt-24">
+    <div className="flex flex-col">
+      <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative py-20 bg-theuyir-darkgrey text-white overflow-hidden">
           <div className="absolute inset-0 -z-10 opacity-20">
             <img
-              src="/lovable-uploads/6baa9d06-e666-4b58-be83-ef94e87d1ddb.png"
+              src="/images/backgrounds/page-header-bg.png"
               alt="Background"
               className="w-full h-full object-cover"
             />
@@ -97,67 +99,66 @@ const Give = () => {
                   <div className="space-y-6">
                     <div>
                       <label className="block font-medium text-theuyir-darkgrey mb-3">Choose Amount</label>
-                      <div className="grid grid-cols-3 gap-3 mb-4">
-                        {[500, 1000, 2000, 5000, 10000, 25000].map((amount) => (
+                      <ToggleGroup 
+                        type="single" 
+                        defaultValue="50" 
+                        value={donationAmount.toString()} 
+                        onValueChange={(value) => handlePresetAmount(Number(value))}
+                        className="flex flex-wrap gap-3 mb-4 justify-center"
+                      >
+                        <ToggleGroupItem value="50" className="border border-gray-300 py-2 px-6 rounded-lg text-xl font-semibold">₹50</ToggleGroupItem>
+                        <ToggleGroupItem value="100" className="border border-gray-300 py-2 px-6 rounded-lg text-xl font-semibold">₹100</ToggleGroupItem>
+                        <ToggleGroupItem value="500" className="border border-gray-300 py-2 px-6 rounded-lg text-xl font-semibold">₹500</ToggleGroupItem>
+                        <ToggleGroupItem value="1000" className="border border-gray-300 py-2 px-6 rounded-lg text-xl font-semibold">₹1,000</ToggleGroupItem>
+                        <ToggleGroupItem value="5000" className="border border-gray-300 py-2 px-6 rounded-lg text-xl font-semibold">₹5,000</ToggleGroupItem>
+                        <ToggleGroupItem value="10000" className="border border-gray-300 py-2 px-6 rounded-lg text-xl font-semibold">₹10,000</ToggleGroupItem>
+                      </ToggleGroup>
+                      
+                      <div className="mb-8">
+                        <label htmlFor="customAmount" className="text-gray-600 block mb-2">Other Amount (₹):</label>
+                        <Input 
+                          id="customAmount" 
+                          type="number" 
+                          min="10" 
+                          value={donationAmount}
+                          onChange={handleCustomAmount}
+                          placeholder="Enter amount" 
+                          className="h-12 text-lg"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block font-medium text-theuyir-darkgrey mb-3">Donation Type</label>
+                        <div className="grid grid-cols-2 gap-3">
                           <button
-                            key={amount}
-                            className={`py-3 px-4 rounded-lg text-center transition-all duration-300 ${
-                              donationAmount === amount 
+                            className={`py-3 px-4 rounded-lg text-center transition-all duration-300 flex items-center justify-center ${
+                              donationType === 'oneTime' 
                                 ? 'bg-theuyir-yellow text-theuyir-darkgrey font-medium shadow-md' 
                                 : 'bg-white text-gray-700 hover:bg-gray-100'
                             }`}
-                            onClick={() => handlePresetAmount(amount)}
+                            onClick={() => setDonationType('oneTime')}
                           >
-                            ₹{amount.toLocaleString()}
+                            <DollarSign size={18} className="mr-2" />
+                            One-Time
                           </button>
-                        ))}
+                          <button
+                            className={`py-3 px-4 rounded-lg text-center transition-all duration-300 flex items-center justify-center ${
+                              donationType === 'monthly' 
+                                ? 'bg-theuyir-yellow text-theuyir-darkgrey font-medium shadow-md' 
+                                : 'bg-white text-gray-700 hover:bg-gray-100'
+                            }`}
+                            onClick={() => setDonationType('monthly')}
+                          >
+                            <Calendar size={18} className="mr-2" />
+                            Monthly
+                          </button>
+                        </div>
                       </div>
                       
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                          <span className="text-gray-500">₹</span>
-                        </div>
-                        <input
-                          type="text"
-                          className="pl-8 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-theuyir-pink focus:border-theuyir-pink text-gray-700"
-                          placeholder="Custom amount"
-                          value={donationAmount}
-                          onChange={handleCustomAmount}
-                        />
-                      </div>
+                      <Button variant="default" size="default" className="w-full group">
+                        Proceed to Payment <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+                      </Button>
                     </div>
-                    
-                    <div>
-                      <label className="block font-medium text-theuyir-darkgrey mb-3">Donation Type</label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          className={`py-3 px-4 rounded-lg text-center transition-all duration-300 flex items-center justify-center ${
-                            donationType === 'oneTime' 
-                              ? 'bg-theuyir-yellow text-theuyir-darkgrey font-medium shadow-md' 
-                              : 'bg-white text-gray-700 hover:bg-gray-100'
-                          }`}
-                          onClick={() => setDonationType('oneTime')}
-                        >
-                          <DollarSign size={18} className="mr-2" />
-                          One-Time
-                        </button>
-                        <button
-                          className={`py-3 px-4 rounded-lg text-center transition-all duration-300 flex items-center justify-center ${
-                            donationType === 'monthly' 
-                              ? 'bg-theuyir-yellow text-theuyir-darkgrey font-medium shadow-md' 
-                              : 'bg-white text-gray-700 hover:bg-gray-100'
-                          }`}
-                          onClick={() => setDonationType('monthly')}
-                        >
-                          <Calendar size={18} className="mr-2" />
-                          Monthly
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <Button variant="default" size="lg" className="w-full group">
-                      Proceed to Payment <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-                    </Button>
                   </div>
                 </div>
                 
@@ -284,8 +285,8 @@ const Give = () => {
                     Donate essential items such as food, clothing, books, medical supplies, or other goods that can 
                     directly benefit those in need.
                   </p>
-                  <Button variant="primary" size="md" fullWidth className="group">
-                    Learn More <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+                  <Button variant="default" size="default" className="w-full group">
+                    Donate with Material Goods <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
               </div>
@@ -309,8 +310,8 @@ const Give = () => {
                     Engage your company in CSR initiatives, sponsorships, or employee giving programs to create 
                     a larger collective impact.
                   </p>
-                  <Button variant="primary" size="md" fullWidth className="group">
-                    Partner With Us <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+                  <Button variant="default" size="default" className="w-full group">
+                    Apply for Corporate Matching <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
               </div>
@@ -334,7 +335,7 @@ const Give = () => {
                     Create a lasting impact by including Uyir Mei in your will or estate plans, ensuring your 
                     values live on through your generosity.
                   </p>
-                  <Button variant="primary" size="md" fullWidth className="group">
+                  <Button variant="default" size="default" className="w-full group">
                     Explore Options <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                   </Button>
                 </div>
@@ -346,35 +347,58 @@ const Give = () => {
               <h3 className="text-2xl font-bold mb-6 text-theuyir-darkgrey text-center">Convenient Payment Methods</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <div className="bg-theuyir-yellow/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                    <CreditCard className="text-theuyir-darkgrey" size={32} />
+                {/* Payment Method Card 1 */}
+                <div className="fade-in-section opacity-0">
+                  <div className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300">
+                    <div className="p-6">
+                      <div className="flex items-center mb-4">
+                        <CreditCard size={24} className="text-theuyir-pink mr-3" />
+                        <h3 className="text-xl font-bold text-theuyir-darkgrey">Credit/Debit Card</h3>
+                      </div>
+                      <p className="text-gray-600 mb-6">Make a secure donation using your credit or debit card. All major cards accepted.</p>
+                      <Button variant="default" size="default" className="w-full group">
+                        Donate by Card <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </div>
                   </div>
-                  <h4 className="font-semibold mb-2 text-theuyir-darkgrey">Credit/Debit Card</h4>
-                  <p className="text-gray-600 text-sm">
-                    Make secure donations using Visa, Mastercard, American Express, or RuPay cards.
-                  </p>
                 </div>
                 
-                <div className="text-center">
-                  <div className="bg-theuyir-yellow/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                    <Wallet className="text-theuyir-darkgrey" size={32} />
+                {/* Payment Method Card 2 */}
+                <div className="fade-in-section opacity-0" style={{ animationDelay: '0.2s' }}>
+                  <div className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300">
+                    <div className="p-6">
+                      <div className="flex items-center mb-4">
+                        <Wallet size={24} className="text-theuyir-pink mr-3" />
+                        <h3 className="text-xl font-bold text-theuyir-darkgrey">UPI</h3>
+                      </div>
+                      <p className="text-gray-600 mb-6">Use UPI to make a quick and easy donation from your mobile device.</p>
+                      <Button variant="default" size="default" className="w-full group">
+                        Pay via UPI <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </div>
                   </div>
-                  <h4 className="font-semibold mb-2 text-theuyir-darkgrey">UPI/Digital Wallets</h4>
-                  <p className="text-gray-600 text-sm">
-                    Use Google Pay, PhonePe, Paytm, or other UPI apps for quick and easy transactions.
-                  </p>
                 </div>
                 
-                <div className="text-center">
-                  <div className="bg-theuyir-yellow/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                    <Gift className="text-theuyir-darkgrey" size={32} />
+                {/* Payment Method Card 3 */}
+                <div className="fade-in-section opacity-0" style={{ animationDelay: '0.4s' }}>
+                  <div className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300">
+                    <div className="p-6">
+                      <div className="flex items-center mb-4">
+                        <Repeat size={24} className="text-theuyir-pink mr-3" />
+                        <h3 className="text-xl font-bold text-theuyir-darkgrey">Recurring Giving</h3>
+                      </div>
+                      <p className="text-gray-600 mb-6">Set up a monthly donation to provide consistent support for our ongoing programs.</p>
+                      <Button variant="default" size="default" className="w-full group">
+                        Give Monthly <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </div>
                   </div>
-                  <h4 className="font-semibold mb-2 text-theuyir-darkgrey">Bank Transfer</h4>
-                  <p className="text-gray-600 text-sm">
-                    Set up one-time or recurring donations directly from your bank account.
-                  </p>
                 </div>
+              </div>
+
+              {/* Payment Method Logos */}
+              <div className="mt-10">
+                <PaymentMethodLogos showBorder={true} logoSize="md" />
               </div>
             </div>
             
@@ -431,7 +455,7 @@ const Give = () => {
                   dreams of becoming a doctor. We could never have afforded these resources on our own." 
                   <span className="font-medium">— Lakshmi, parent of a beneficiary</span>
                 </p>
-                <Button variant="secondary" size="md" className="group">
+                <Button variant="secondary" size="default" className="group">
                   Read Full Story <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </div>
@@ -507,7 +531,7 @@ const Give = () => {
               
               <div className="text-center mt-10 fade-in-section opacity-0">
                 <p className="text-gray-600 mb-4">Still have questions about donating?</p>
-                <Button variant="secondary" size="md">
+                <Button variant="secondary" size="default">
                   Contact Our Donor Support Team
                 </Button>
               </div>
@@ -516,7 +540,7 @@ const Give = () => {
         </section>
         
         {/* CTA Section */}
-        <section className="py-20 bg-theuyir-pink text-white">
+        <section className="py-16 bg-theuyir-pink text-white">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 fade-in-section opacity-0">
               Ready to Make a <span className="yellow-highlight">Difference</span>?
@@ -526,7 +550,7 @@ const Give = () => {
               Every contribution, no matter the size, brings us one step closer to a more equitable society.
             </p>
             <div className="flex flex-wrap justify-center gap-4 fade-in-section opacity-0" style={{ animationDelay: '0.4s' }}>
-              <Button variant="primary" size="lg">
+              <Button variant="default" size="lg">
                 Donate Now
               </Button>
               <Button size="lg" className="bg-white text-theuyir-pink hover:bg-white/90">
@@ -536,8 +560,6 @@ const Give = () => {
           </div>
         </section>
       </main>
-      
-      <Footer />
     </div>
   );
 };

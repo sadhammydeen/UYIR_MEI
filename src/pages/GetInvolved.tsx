@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
 import { 
   ArrowRight, Clock, Heart, Star, MapPin, Calendar, 
   Briefcase, GraduationCap, FileText, CheckCircle, User,
-  Users 
+  Users, Mail, Phone, BookOpen, PenTool, Globe, ShieldCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -36,15 +35,13 @@ const GetInvolved = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      
-      <main className="flex-grow pt-24">
+    <div className="flex flex-col">
+      <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative py-20 bg-theuyir-darkgrey text-white overflow-hidden">
           <div className="absolute inset-0 -z-10 opacity-20">
             <img
-              src="/lovable-uploads/6baa9d06-e666-4b58-be83-ef94e87d1ddb.png"
+              src="/images/backgrounds/page-header-bg.png"
               alt="Background"
               className="w-full h-full object-cover"
             />

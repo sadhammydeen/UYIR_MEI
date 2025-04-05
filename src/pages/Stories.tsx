@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { ArrowRight, Search, Tag, Calendar, User, Heart, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -106,15 +104,13 @@ const Stories = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      
-      <main className="flex-grow pt-24">
+    <div className="flex flex-col">
+      <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative py-20 bg-theuyir-darkgrey text-white overflow-hidden">
           <div className="absolute inset-0 -z-10 opacity-20">
             <img
-              src="/lovable-uploads/6baa9d06-e666-4b58-be83-ef94e87d1ddb.png"
+              src="/images/backgrounds/page-header-bg.png"
               alt="Background"
               className="w-full h-full object-cover"
             />
@@ -416,7 +412,7 @@ const Stories = () => {
                       </label>
                     </div>
                     
-                    <Button variant="primary" size="lg" type="submit" fullWidth>
+                    <Button variant="default" size="lg" type="submit" className="w-full">
                       Submit Your Story
                     </Button>
                   </form>
@@ -456,7 +452,7 @@ const Stories = () => {
               helps create more inspiring stories of hope and transformation.
             </p>
             <div className="flex flex-wrap justify-center gap-4 fade-in-section opacity-0" style={{ animationDelay: '0.4s' }}>
-              <Button variant="primary" size="lg">
+              <Button variant="default" size="lg">
                 Donate Now
               </Button>
               <Button size="lg" className="bg-white text-theuyir-pink hover:bg-white/90">
@@ -466,8 +462,6 @@ const Stories = () => {
           </div>
         </section>
       </main>
-      
-      <Footer />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, ArrowRight, Loader2 } from 'lucide-react';
 import { useLoading } from '@/contexts/LoadingContext';
+import PaymentMethodLogos from '@/components/shared/PaymentMethodLogos';
 
 const Footer = () => {
   const { setIsLoading, setLoadingText } = useLoading();
@@ -44,11 +45,10 @@ const Footer = () => {
   ];
 
   const paymentMethods = [
-    { name: 'Visa', logo: '/lovable-uploads/visa.png' },
-    { name: 'Mastercard', logo: '/lovable-uploads/mastercard.png' },
-    { name: 'UPI', logo: '/lovable-uploads/upi.png' },
-    { name: 'Net Banking', logo: '/lovable-uploads/netbanking.png' },
-    { name: 'Google Pay', logo: '/lovable-uploads/gpay.png' }
+    { name: 'Visa', logo: '/images/payment-methods/visa.png' },
+    { name: 'Mastercard', logo: '/images/payment-methods/mastercard.png' },
+    { name: 'UPI', logo: '/images/payment-methods/upi.png' },
+    { name: 'Google Pay', logo: '/images/payment-methods/gpay.png' }
   ];
 
   return (
@@ -61,7 +61,7 @@ const Footer = () => {
           <div className="relative z-10">
             <div className="flex items-center mb-6 group">
               <img 
-                src="/lovable-uploads/logo.png"
+                src="/images/logos/uyir-mei-logo.png"
                 alt="Uyir Mei"
                 className="h-16 w-auto transition-transform duration-300 group-hover:scale-105"
               />
@@ -164,16 +164,7 @@ const Footer = () => {
         {/* Payment Methods */}
         <div className="mt-12 pt-8 border-t border-gray-700/50">
           <h3 className="text-lg font-semibold mb-4 text-center font-display">Secure Payment Methods</h3>
-          <div className="flex flex-wrap justify-center items-center gap-6">
-            {paymentMethods.map(({ name, logo }) => (
-              <img
-                key={name}
-                src={logo}
-                alt={name}
-                className="h-8 w-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
-              />
-            ))}
-          </div>
+          <PaymentMethodLogos showBorder={false} title="" logoSize="sm" />
         </div>
 
         <div className="border-t border-gray-700/50 mt-8 pt-8 text-center text-gray-400">

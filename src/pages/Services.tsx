@@ -64,12 +64,12 @@ const Services = () => {
 
   return (
     <div>
-      <main className="flex-grow pt-24">
+      <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative py-20 bg-theuyir-darkgrey text-white overflow-hidden">
           <div className="absolute inset-0 -z-10 opacity-20">
             <img
-              src="/lovable-uploads/6baa9d06-e666-4b58-be83-ef94e87d1ddb.png"
+              src="/images/backgrounds/page-header-bg.png"
               alt="Background"
               className="w-full h-full object-cover"
             />
@@ -318,9 +318,15 @@ const Services = () => {
                   </div>
                 </div>
                 
-                <Button variant="primary" size="lg" className="group">
-                  Become a Partner <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                </Button>
+                <div className="text-center mt-12 fade-in-section opacity-0">
+                  <p className="text-white/80 max-w-2xl mx-auto mb-10">
+                    Combining our platform's reach with your organization's expertise, we can create a greater impact for beneficiaries across communities.
+                  </p>
+                  
+                  <Button variant="default" size="lg" className="group">
+                    Become a Partner <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                  </Button>
+                </div>
               </div>
               
               <div className="relative rounded-xl overflow-hidden shadow-xl fade-in-section opacity-0">

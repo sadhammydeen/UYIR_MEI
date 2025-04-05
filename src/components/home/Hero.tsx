@@ -31,23 +31,15 @@ const Hero = () => {
   return (
     <div className="relative min-h-screen flex items-center">
       {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        {!imageError ? (
-          <div className="absolute inset-0">
-            <div 
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-              style={{
-                backgroundImage: `url('/lovable-uploads/three-children.jpg')`,
-                filter: 'brightness(0.8) contrast(1.1)',
-              }}
-            ></div>
-            {/* Gradient overlays for better text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
-          </div>
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-theuyir-darkgrey to-theuyir-yellow/20"></div>
-        )}
+      <div 
+        className="absolute inset-0 z-0 overflow-hidden"
+        style={{ 
+          backgroundImage: `url('/images/heroes/main-hero.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/50"></div>
       </div>
 
       {/* Content */}
