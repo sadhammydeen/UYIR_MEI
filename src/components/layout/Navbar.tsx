@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Menu, X, Search, User, LogOut, ChevronDown, 
-  LayoutDashboard, Settings, Heart, MessageSquare
+  LayoutDashboard, Settings, Heart, MessageSquare, Building2, Users, FileText
 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import { useLoading } from '@/contexts/LoadingContext';
@@ -15,6 +15,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 
 const Navbar = () => {
@@ -101,12 +103,14 @@ const Navbar = () => {
               { path: '/services', label: 'WHAT WE DO' },
               { path: '/get-involved', label: 'GET INVOLVED' },
               { path: '/give', label: 'WAYS TO GIVE' },
+              { path: '/needs-donate', label: 'DONATE TO NEEDS' },
+              { path: '/impact-tracker', label: 'IMPACT' },
               { path: '/stories', label: 'STORIES' }
             ].map(({ path, label }) => (
               <Link
                 key={path}
                 to={path} 
-                className={`nav-link relative overflow-hidden group text-sm lg:text-base ${location.pathname === path ? 'text-theuyir-pink' : ''}`}
+                className={`nav-link relative overflow-hidden group text-sm lg:text-base flex items-center ${location.pathname === path ? 'text-theuyir-pink' : ''}`}
                 onClick={() => handleNavigation(path)}
               >
                 <span className="relative z-10">{label}</span>
@@ -155,6 +159,44 @@ const Navbar = () => {
                       My Profile
                     </Link>
                   </DropdownMenuItem>
+                  
+                  {/* NGO-specific menu items */}
+                  {user?.role === 'ngo' && (
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>NGO Tools</DropdownMenuLabel>
+                      <DropdownMenuItem asChild>
+                        <Link 
+                          to="/ngo-dashboard" 
+                          className="flex items-center cursor-pointer"
+                          onClick={() => handleNavigation('/ngo-dashboard')}
+                        >
+                          <Building2 className="mr-2 h-4 w-4" />
+                          NGO Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link 
+                          to="/ngo-profile" 
+                          className="flex items-center cursor-pointer"
+                          onClick={() => handleNavigation('/ngo-profile')}
+                        >
+                          <FileText className="mr-2 h-4 w-4" />
+                          NGO Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link 
+                          to="/ngo-directory" 
+                          className="flex items-center cursor-pointer"
+                          onClick={() => handleNavigation('/ngo-directory')}
+                        >
+                          <Users className="mr-2 h-4 w-4" />
+                          NGO Directory
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  )}
+                  
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className="flex items-center cursor-pointer text-red-600"
@@ -198,115 +240,128 @@ const Navbar = () => {
             onClick={toggleMobileMenu}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div 
-          className={`md:hidden bg-white/95 backdrop-blur-sm shadow-lg transition-all duration-300 ease-in-out fixed top-[72px] left-0 right-0 ${
-            mobileMenuOpen ? 'max-h-[calc(100vh-72px)] opacity-100' : 'max-h-0 opacity-0'
-          } overflow-hidden`}
-        >
-          <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
-            {isAuthenticated && (
-              <div className="flex items-center py-2 border-b border-gray-100 mb-2">
-                <Avatar className="h-10 w-10 mr-3">
-                  <AvatarImage src={user?.avatar} alt={user?.name || 'User'} />
-                  <AvatarFallback className="bg-theuyir-yellow text-theuyir-darkgrey">
-                    {getInitials(user?.name || 'User')}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="font-medium text-theuyir-darkgrey">{user?.name}</div>
-                  <div className="text-xs text-gray-500">{user?.email}</div>
-                </div>
-              </div>
-            )}
-
-            {[
-              { path: '/about', label: 'ABOUT US' },
-              { path: '/services', label: 'WHAT WE DO' },
-              { path: '/get-involved', label: 'GET INVOLVED' },
-              { path: '/give', label: 'WAYS TO GIVE' },
-              { path: '/stories', label: 'STORIES' }
-            ].map(({ path, label }) => (
-              <Link
-                key={path}
-                to={path} 
-                className={`nav-link py-2 pl-2 border-l-4 transition-all duration-300 ${
-                  location.pathname === path ? 'border-theuyir-yellow text-theuyir-pink' : 'border-transparent'
-                }`}
-                onClick={() => handleNavigation(path)}
-              >
-                {label}
-              </Link>
-            ))}
-
-            {isAuthenticated ? (
-              <>
-                <Link 
-                  to="/dashboard" 
-                  className="flex items-center py-2 pl-2 border-l-4 border-transparent"
-                  onClick={() => handleNavigation('/dashboard')}
-                >
-                  <LayoutDashboard className="mr-2 h-5 w-5" />
-                  DASHBOARD
-                </Link>
-                <Link 
-                  to="/profile" 
-                  className="flex items-center py-2 pl-2 border-l-4 border-transparent"
-                  onClick={() => handleNavigation('/profile')}
-                >
-                  <User className="mr-2 h-5 w-5" />
-                  MY PROFILE
-                </Link>
-                <button 
-                  className="flex items-center py-2 pl-2 border-l-4 border-transparent text-red-600 w-full text-left"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="mr-2 h-5 w-5" />
-                  LOG OUT
-                </button>
-              </>
-            ) : (
-              <div className="flex flex-col space-y-3 pt-2">
-                <Link 
-                  to="/login" 
-                  className="w-full"
-                  onClick={() => handleNavigation('/login')}
-                >
-                  <Button 
-                    variant="default" 
-                    className="w-full justify-center bg-theuyir-pink hover:bg-theuyir-pink-dark text-white animate-flicker flex items-center justify-center space-x-2"
-                  >
-                    <Heart size={16} />
-                    <span>DONATE</span>
-                  </Button>
-                </Link>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pt-2">
-              <button 
-                className="flex items-center justify-center w-full text-theuyir-darkgrey bg-gray-100 hover:bg-gray-200 p-3 rounded-lg transition-all"
-                aria-label="AI Chatbot"
-                onClick={toggleChatbot}
-              >
-                <MessageSquare size={20} className="text-theuyir-pink mr-2" />
-                <span className="font-medium">Chat with AI Assistant</span>
-                <span className="ml-2 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-theuyir-pink opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-theuyir-pink"></span>
-                </span>
-              </button>
-            </div>
-          </div>
         </div>
       </header>
 
-      {/* Chatbot Component */}
-      <Chatbot isOpen={chatbotOpen} onClose={() => setChatbotOpen(false)} />
+      {/* Mobile menu */}
+      <div 
+        className={`fixed inset-0 z-40 bg-white transform transition-transform duration-300 ease-in-out ${
+          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        } md:hidden pt-20 pb-6 px-6 overflow-y-auto`}
+      >
+        <nav className="flex flex-col space-y-6">
+          {[
+            { path: '/', label: 'Home' },
+            { path: '/about', label: 'About Us' },
+            { path: '/services', label: 'What We Do' },
+            { path: '/get-involved', label: 'Get Involved' },
+            { path: '/give', label: 'Ways to Give' },
+            { path: '/needs-donate', label: 'Donate to Needs' },
+            { path: '/impact-tracker', label: 'Impact' },
+            { path: '/stories', label: 'Stories' }
+          ].map(({ path, label }) => (
+            <Link
+              key={path}
+              to={path}
+              className={`flex items-center text-lg font-medium ${
+                location.pathname === path ? 'text-theuyir-pink' : 'text-theuyir-darkgrey'
+              }`}
+              onClick={() => handleNavigation(path)}
+            >
+              {label}
+            </Link>
+          ))}
+          
+          {isAuthenticated ? (
+            <>
+              <div className="w-full h-px bg-gray-200 my-2"></div>
+              <Link
+                to="/dashboard"
+                className="flex items-center text-lg font-medium text-theuyir-darkgrey"
+                onClick={() => handleNavigation('/dashboard')}
+              >
+                <LayoutDashboard className="mr-2" size={18} />
+                Dashboard
+              </Link>
+              <Link
+                to="/profile"
+                className="flex items-center text-lg font-medium text-theuyir-darkgrey"
+                onClick={() => handleNavigation('/profile')}
+              >
+                <User className="mr-2" size={18} />
+                My Profile
+              </Link>
+              
+              {/* NGO-specific mobile menu items */}
+              {user?.role === 'ngo' && (
+                <>
+                  <div className="w-full h-px bg-gray-200 my-2"></div>
+                  <div className="text-sm text-gray-500 mb-1">NGO Tools</div>
+                  <Link
+                    to="/ngo-dashboard"
+                    className="flex items-center text-lg font-medium text-theuyir-darkgrey"
+                    onClick={() => handleNavigation('/ngo-dashboard')}
+                  >
+                    <Building2 className="mr-2" size={18} />
+                    NGO Dashboard
+                  </Link>
+                  <Link
+                    to="/ngo-profile"
+                    className="flex items-center text-lg font-medium text-theuyir-darkgrey"
+                    onClick={() => handleNavigation('/ngo-profile')}
+                  >
+                    <FileText className="mr-2" size={18} />
+                    NGO Profile
+                  </Link>
+                  <Link
+                    to="/ngo-directory"
+                    className="flex items-center text-lg font-medium text-theuyir-darkgrey"
+                    onClick={() => handleNavigation('/ngo-directory')}
+                  >
+                    <Users className="mr-2" size={18} />
+                    NGO Directory
+                  </Link>
+                </>
+              )}
+              
+              <button
+                className="flex items-center text-lg font-medium text-red-600 mt-4"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2" size={18} />
+                Log Out
+              </button>
+            </>
+          ) : (
+            <div className="flex flex-col space-y-4 mt-4">
+              <Link
+                to="/login"
+                className="w-full py-2 text-center text-lg font-medium text-theuyir-darkgrey border border-theuyir-darkgrey rounded-md"
+                onClick={() => handleNavigation('/login')}
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="w-full py-2 text-center text-lg font-medium text-white bg-theuyir-pink rounded-md flex items-center justify-center"
+                onClick={() => handleNavigation('/register')}
+              >
+                <Heart size={18} className="mr-2" />
+                Donate & Register
+              </Link>
+            </div>
+          )}
+        </nav>
+      </div>
+
+      {/* Chatbot */}
+      {chatbotOpen && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Chatbot isOpen={chatbotOpen} onClose={toggleChatbot} />
+        </div>
+      )}
     </>
   );
 };

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { 
   ArrowRight, Clock, Heart, Star, MapPin, Calendar, 
   Briefcase, GraduationCap, FileText, CheckCircle, User,
-  Users, Mail, Phone, BookOpen, PenTool, Globe, ShieldCheck
+  Users, Mail, Phone, BookOpen, PenTool, Globe, ShieldCheck, Building2, LineChart, Info
 } from 'lucide-react';
 import Button from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const GetInvolved = () => {
   const [activeTab, setActiveTab] = useState('volunteer');
@@ -190,7 +191,7 @@ const GetInvolved = () => {
                     </div>
                     
                     <div className="flex flex-wrap gap-4 mb-8">
-                      <Button variant="default" size="lg" className="flex items-center">
+                      <Button variant="primary" size="lg" className="flex items-center">
                         Apply Now
                         <ArrowRight className="ml-2" />
                       </Button>
@@ -236,7 +237,7 @@ const GetInvolved = () => {
                     </div>
                     
                     <div className="flex flex-wrap gap-4 mb-8">
-                      <Button variant="default" size="lg" className="flex items-center">
+                      <Button variant="primary" size="lg" className="flex items-center">
                         Apply Now
                         <ArrowRight className="ml-2" />
                       </Button>
@@ -282,7 +283,7 @@ const GetInvolved = () => {
                     </div>
                     
                     <div className="flex flex-wrap gap-4 mb-8">
-                      <Button variant="default" size="lg" className="flex items-center">
+                      <Button variant="primary" size="lg" className="flex items-center">
                         Apply Now
                         <ArrowRight className="ml-2" />
                       </Button>
@@ -459,7 +460,7 @@ const GetInvolved = () => {
                     
                     <div className="mt-8">
                       <Button 
-                        variant="default" 
+                        variant="primary" 
                         size="lg" 
                         type="submit"
                         className="w-full"
@@ -618,7 +619,7 @@ const GetInvolved = () => {
                     
                     <div className="mt-8">
                       <Button 
-                        variant="default" 
+                        variant="primary" 
                         size="lg" 
                         type="submit"
                         className="w-full"
@@ -685,6 +686,71 @@ const GetInvolved = () => {
           </section>
         )}
         
+        {/* NGO Section */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-theuyir-darkgrey mb-4">Partner as an NGO</h2>
+              <p className="text-lg text-gray-600">
+                Join our network of verified NGOs to collaborate, share resources, and create greater impact together.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Building2 className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Register Your NGO</h3>
+                <p className="text-gray-600 mb-4">Complete our verification process to join our platform and access collaboration opportunities.</p>
+                <Link to="/ngo-registration">
+                  <Button variant="outline" className="w-full">Apply Now</Button>
+                </Link>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Collaborate With Others</h3>
+                <p className="text-gray-600 mb-4">Connect with other NGOs to share resources, knowledge, and create joint initiatives.</p>
+                <Link to="/ngo-directory">
+                  <Button variant="outline" className="w-full">Explore NGOs</Button>
+                </Link>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <LineChart className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Track Your Impact</h3>
+                <p className="text-gray-600 mb-4">Measure and showcase your organization's contribution with our impact tracking tools.</p>
+                <Button variant="outline" className="w-full">Learn More</Button>
+              </div>
+            </div>
+            
+            <div className="max-w-3xl mx-auto mt-12 bg-theuyir-yellow/10 p-6 rounded-lg border border-theuyir-yellow">
+              <div className="flex flex-col md:flex-row items-center">
+                <div className="mb-4 md:mb-0 md:mr-6">
+                  <Info className="w-12 h-12 text-theuyir-yellow" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold mb-2">Already Registered?</h4>
+                  <p className="text-gray-600 mb-4">If your NGO is already registered with us, you can log in to access your dashboard and collaboration tools.</p>
+                  <div className="flex space-x-4">
+                    <Link to="/login">
+                      <Button variant="primary">Login</Button>
+                    </Link>
+                    <Link to="/contact">
+                      <Button variant="outline">Contact Support</Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
         {/* CTA Section */}
         <section className="py-20 bg-theuyir-pink text-white">
           <div className="container mx-auto px-4 text-center">
@@ -696,7 +762,7 @@ const GetInvolved = () => {
               together we can create meaningful change in our communities.
             </p>
             <div className="flex flex-wrap justify-center gap-4 fade-in-section opacity-0" style={{ animationDelay: '0.4s' }}>
-              <Button variant="default" size="lg">
+              <Button variant="primary" size="lg">
                 Get Started Now
               </Button>
               <Button size="lg" className="bg-white text-theuyir-pink hover:bg-white/90">

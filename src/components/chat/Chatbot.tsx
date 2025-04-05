@@ -13,14 +13,19 @@ import {
   ThumbsUp, 
   ThumbsDown, 
   Cpu, 
-  MessageSquare 
+  MessageSquare,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 // Import any additional icons we need
-import { BarChart3, RefreshCw, Smile, Frown, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { BarChart3, RefreshCw, Smile, Frown, Sparkles } from 'lucide-react';
 // Use a custom Link icon to avoid name collision
 import { Link as LinkIcon } from 'lucide-react';
 import Button from '@/components/ui/button';
 import axios from 'axios';
+import { useSession } from '@/contexts/SessionContext';
 
 // Helper function to generate unique IDs
 const generateId = () => {
@@ -283,17 +288,141 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'testing'>('disconnected');
   const [apiConnected, setApiConnected] = useState<boolean>(false);
   const [showApiStatus, setShowApiStatus] = useState<boolean>(false);
-  const [settings, setSettings] = useState<ChatSettings>(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<ChatSettings>({
+    ...DEFAULT_SETTINGS,
+    soundEnabled: true
+  });
   const [stats, setStats] = useState<ChatStats>(INITIAL_STATS);
   const [showSettings, setShowSettings] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [userId] = useState<string>(localStorage.getItem('uyirmei_chat_userid') || generateId());
   const [lastTypedTime, setLastTypedTime] = useState<number>(0);
   const [isUserTyping, setIsUserTyping] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(false);
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageSound = useRef<HTMLAudioElement | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Voice integration - simplified direct implementation
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [isVoiceSupported, setIsVoiceSupported] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const { logActivity } = useSession();
+
+  // Initialize speech recognition
+  useEffect(() => {
+    // Check if speech recognition is supported
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      
+      const initRecognition = () => {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = true;
+        recognitionRef.current.interimResults = true;
+        recognitionRef.current.lang = 'en-US';
+        
+        recognitionRef.current.onstart = () => {
+          setIsListening(true);
+          logActivity('voice_recognition_started');
+          console.log('Speech recognition started');
+        };
+        
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+          logActivity('voice_recognition_ended');
+          console.log('Speech recognition ended');
+        };
+        
+        recognitionRef.current.onresult = (event: any) => {
+          let finalTranscript = '';
+          for (let i = 0; i < event.results.length; i++) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+          
+          console.log('Transcript:', finalTranscript);
+          setTranscript(finalTranscript);
+          setInputValue(finalTranscript);
+        };
+        
+        recognitionRef.current.onerror = (event: any) => {
+          console.error(`Speech recognition error: ${event.error}`);
+          logActivity('voice_recognition_error', { error: event.error });
+          setIsListening(false);
+          
+          // If we get an error, reinitialize after a delay
+          setTimeout(initRecognition, 1000);
+        };
+      };
+      
+      initRecognition();
+      setIsVoiceSupported(true);
+      console.log('Speech recognition initialized');
+    } else {
+      console.log('Speech recognition not supported in this browser');
+      setIsVoiceSupported(false);
+    }
+    
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {
+          console.error('Error stopping speech recognition:', e);
+        }
+      }
+    };
+  }, [logActivity]);
+
+  // Functions for voice control
+  const startListening = () => {
+    if (recognitionRef.current) {
+      try {
+        // Clear the input value first to get a fresh start
+        setInputValue('');
+        setTranscript('');
+        
+        recognitionRef.current.start();
+        console.log('Starting speech recognition');
+      } catch (err) {
+        console.error('Error starting speech recognition:', err);
+        
+        // If already started, stop and restart
+        try {
+          recognitionRef.current.stop();
+          setTimeout(() => {
+            // Clear values again
+            setInputValue('');
+            setTranscript('');
+            recognitionRef.current.start();
+          }, 300);
+        } catch (e) {
+          console.error('Error restarting speech recognition:', e);
+        }
+      }
+    }
+  };
+  
+  const stopListening = () => {
+    if (recognitionRef.current && isListening) {
+      try {
+        recognitionRef.current.stop();
+        console.log('Stopping speech recognition');
+      } catch (err) {
+        console.error('Error stopping speech recognition:', err);
+      }
+    }
+  };
+  
+  const toggleListening = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+    logActivity('chatbot_voice_control_toggle', { isListening: !isListening });
+  };
 
   useEffect(() => {
     // Save the userId to localStorage
@@ -421,6 +550,103 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
     if (positiveCount > negativeCount) return 'positive';
     if (negativeCount > positiveCount) return 'negative';
     return 'neutral';
+  };
+
+  // Process the message locally (when API is not available)
+  const processLocalResponse = (text: string): Message => {
+    console.log("Processing local response for:", text);
+    const lowercaseInput = text.toLowerCase().trim();
+    
+    // Check for common greetings first
+    if (lowercaseInput.match(/^(hi|hello|hey|greetings)/i)) {
+      return {
+        id: generateId(),
+        text: "Hello! I'm Chol, your AI assistant. How can I help you today?",
+        sender: 'bot',
+        timestamp: new Date(),
+        source: 'fallback'
+      };
+    }
+    
+    if (lowercaseInput.match(/^(thank you|thanks)/i)) {
+      return {
+        id: generateId(),
+        text: "You're welcome! Is there anything else I can help you with?",
+        sender: 'bot',
+        timestamp: new Date(),
+        source: 'fallback'
+      };
+    }
+    
+    if (lowercaseInput.match(/^(bye|goodbye|see you)/i)) {
+      return {
+        id: generateId(),
+        text: "Goodbye! Feel free to come back anytime you have questions.",
+        sender: 'bot',
+        timestamp: new Date(),
+        source: 'fallback'
+      };
+    }
+    
+    // Simple keyword matching to find the most relevant knowledge base entry
+    let bestMatch = {
+      topic: '',
+      score: 0
+    };
+    
+    // Calculate match score based on keyword presence
+    Object.entries(TOPIC_KEYWORDS).forEach(([topic, keywords]) => {
+      const matchScore = keywords.reduce((score, keyword) => {
+        if (lowercaseInput.includes(keyword.toLowerCase())) {
+          return score + 1;
+        }
+        return score;
+      }, 0);
+      
+      if (matchScore > bestMatch.score) {
+        bestMatch = {
+          topic,
+          score: matchScore
+        };
+      }
+    });
+    
+    console.log("Best match:", bestMatch);
+    
+    // If we have a reasonable match, use the knowledge base
+    if (bestMatch.score > 0 && KNOWLEDGE_BASE[bestMatch.topic]) {
+      const knowledgeItem = KNOWLEDGE_BASE[bestMatch.topic];
+      
+      return {
+        id: generateId(),
+        text: knowledgeItem.text,
+        sender: 'bot',
+        timestamp: new Date(),
+        links: knowledgeItem.links,
+        source: 'kb'
+      };
+    }
+    
+    // Default responses if no keyword match is found
+    const defaultResponses = [
+      "I'd be happy to help with that. Could you provide more details about what specific information you're looking for?",
+      "I'm here to assist you with questions about Uyir Mei. You can ask about our services, donation methods, or volunteer opportunities.",
+      "I'm not sure I understand completely. You can ask me about our donation process, volunteer opportunities, or services we provide.",
+      "Let me help you with that. We offer various services including education support, healthcare assistance, and community development initiatives.",
+      "I'm here to assist with any questions about Uyir Mei. What would you like to know about our organization?"
+    ];
+    
+    // Select a random default response
+    const randomResponse = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    
+    // Fallback for when no match is found
+    return {
+      id: generateId(),
+      text: randomResponse,
+      sender: 'bot',
+      timestamp: new Date(),
+      source: 'fallback'
+    };
   };
 
   // Update the generateLocalResponse function to include sentiment property
@@ -564,76 +790,73 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
     setSuggestedQuestions(contextQuestions);
   };
 
-  const handleSendMessage = async (text = inputValue) => {
-    if (!text.trim()) return;
+  // Handle the submission of a message
+  const handleSendMessage = async () => {
+    if (!inputValue.trim() || isTyping) return;
     
+    // User message
     const userMessage: Message = {
       id: generateId(),
-      text: text,
+      text: inputValue,
       sender: 'user',
       timestamp: new Date()
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    // Add user message to the chat
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+    
+    // Clear the input and transcript
+    const userInput = inputValue;
     setInputValue('');
+    setTranscript('');
     setIsTyping(true);
     
-    // Update stats
-    setStats(prev => ({
-      ...prev,
-      messageCount: prev.messageCount + 1
-    }));
+    // If user is using voice, stop listening when message is sent
+    if (isListening) {
+      stopListening();
+    }
     
+    // Update stats
+    setStats(prevStats => ({
+      ...prevStats,
+      messageCount: prevStats.messageCount + 1
+    }));
+
     try {
-      // Detect sentiment in user message
-      const userSentiment = detectUserSentiment(text);
-      if (userSentiment === 'positive') {
-        setStats(prev => ({
-          ...prev,
-          positiveUserSentiment: prev.positiveUserSentiment + 1
-        }));
-      } else if (userSentiment === 'negative') {
-        setStats(prev => ({
-          ...prev,
-          negativeUserSentiment: prev.negativeUserSentiment + 1
-        }));
-      }
+      // Process locally since API connection might be failing
+      const response = processLocalResponse(userInput);
       
-      // Generate response either via API or local fallback
-      const response = apiMode
-        ? await generateApiResponse(text, messages)
-        : await generateLocalResponse(text);
-      
-      const botResponse: Message = {
-        id: generateId(),
-        text: response.text,
-        sender: 'bot',
-        timestamp: new Date(),
-        links: response.links,
-        source: response.source as any,
-        sentiment: response.sentiment as any
-      };
-      
-      setMessages(prev => [...prev, botResponse]);
-      
-      // Update suggested questions based on the conversation if enabled
-      if (settings.autoSuggest) {
-        updateSuggestedQuestions(text);
-      }
+      // Add the bot's response to the messages
+      setTimeout(() => {
+        setMessages(prevMessages => [...prevMessages, response]);
+        setIsTyping(false);
+        
+        // Update suggested questions based on the conversation
+        updateSuggestedQuestions(userInput);
+        
+        // Play sound if enabled
+        if (settings.soundEnabled && messageSound.current) {
+          messageSound.current.play().catch(e => console.log('Error playing sound:', e));
+        }
+      }, 1000); // Simulated delay for typing effect
     } catch (error) {
-      console.error("Error processing message:", error);
+      console.error('Error processing message:', error);
       
+      // Add fallback response in case of error
       const errorResponse: Message = {
         id: generateId(),
-        text: "I'm sorry, I encountered an error while processing your request. Please try again later.",
+        text: "I'm sorry, I encountered an error while processing your request. Please try again.",
         sender: 'bot',
         timestamp: new Date(),
         source: 'error'
       };
       
-      setMessages(prev => [...prev, errorResponse]);
+      setTimeout(() => {
+        setMessages(prevMessages => [...prevMessages, errorResponse]);
+        setIsTyping(false);
+      }, 1000);
     } finally {
-      setIsTyping(false);
+      setIsSearchingWeb(false);
     }
   };
 
@@ -644,7 +867,8 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
   };
 
   const handleSuggestedQuestionClick = (questionText: string) => {
-    handleSendMessage(questionText);
+    setInputValue(questionText);
+    handleSendMessage();
   };
 
   const toggleMinimize = () => {
@@ -744,16 +968,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
             <option value="dark">Dark</option>
             <option value="system">System Default</option>
           </select>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <label className="text-sm">Sound Effects</label>
-          <button 
-            onClick={() => saveSettings({...settings, soundEnabled: !settings.soundEnabled})}
-            className={`p-2 rounded-full ${settings.soundEnabled ? 'bg-theuyir-pink text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
-          >
-            {settings.soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-          </button>
         </div>
         
         <div className="flex items-center justify-between">
@@ -1050,17 +1264,27 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
           {/* Input */}
           <div className="p-3 border-t border-gray-200 dark:border-gray-700">
             <div className="flex">
+              {isVoiceSupported && (
+                <Button 
+                  type="button"
+                  variant={isListening ? "destructive" : "outline"}
+                  className="rounded-l-lg"
+                  onClick={toggleListening}
+                >
+                  {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                </Button>
+              )}
               <input
                 type="text"
                 value={inputValue}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                className={`flex-1 border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-theuyir-pink focus:border-transparent ${themeClasses.input}`}
+                placeholder={isListening ? "Listening..." : "Type your message..."}
+                className={`flex-1 border ${isVoiceSupported ? '' : 'rounded-l-lg'} px-4 py-2 focus:outline-none focus:ring-2 focus:ring-theuyir-pink focus:border-transparent ${themeClasses.input}`}
                 ref={inputRef}
               />
               <Button 
-                onClick={() => handleSendMessage()}
+                onClick={handleSendMessage}
                 className="rounded-r-lg bg-theuyir-pink hover:bg-theuyir-pink-dark"
                 disabled={isTyping || !inputValue.trim() || isSearchingWeb}
               >
@@ -1071,6 +1295,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
               {apiMode 
                 ? "Powered by Chol (சொல்) AI" 
                 : "Using local responses (API not connected)"}
+              {isListening && <span className="ml-2 animate-pulse text-theuyir-pink">● Voice Active</span>}
             </p>
           </div>
         </>

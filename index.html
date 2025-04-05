@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Uyir Mei Dashboard</title>
+    <title>Uyir Mei</title>
     <meta name="description" content="Uyir Mei - Connecting Compassion" />
     <meta name="author" content="Uyir Mei" />
     
@@ -21,6 +21,25 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@uyirmei" />
     <meta name="twitter:image" content="/images/logos/uyir-mei-logo.png" />
+    
+    <!-- Permission handling script -->
+    <script>
+      // Function to request microphone permission when page loads
+      window.onload = function() {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          console.log("Requesting microphone permission");
+          navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function(stream) {
+              console.log("Microphone permission granted");
+              // Stop the stream immediately as we just needed permission
+              stream.getTracks().forEach(track => track.stop());
+            })
+            .catch(function(err) {
+              console.log("Microphone permission denied:", err);
+            });
+        }
+      };
+    </script>
   </head>
 
   <body>

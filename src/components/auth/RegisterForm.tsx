@@ -18,7 +18,7 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, { message: 'Password must include at least one uppercase letter' })
     .regex(/[0-9]/, { message: 'Password must include at least one number' }),
   confirmPassword: z.string(),
-  role: z.enum(['user', 'volunteer', 'beneficiary'], { message: 'Please select a role' }),
+  role: z.enum(['user', 'volunteer', 'beneficiary', 'ngo'], { message: 'Please select a role' }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
@@ -168,7 +168,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, redirectTo = '/d
       <div className="space-y-2">
         <Label htmlFor="role">I am registering as</Label>
         <Select 
-          onValueChange={(value) => setValue('role', value as 'user' | 'volunteer' | 'beneficiary')} 
+          onValueChange={(value) => setValue('role', value as 'user' | 'volunteer' | 'beneficiary' | 'ngo')} 
           defaultValue={watch('role')}
         >
           <SelectTrigger className={errors.role ? 'border-red-500' : ''}>
@@ -178,6 +178,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, redirectTo = '/d
             <SelectItem value="user">General User</SelectItem>
             <SelectItem value="volunteer">Volunteer</SelectItem>
             <SelectItem value="beneficiary">Beneficiary</SelectItem>
+            <SelectItem value="ngo">NGO</SelectItem>
           </SelectContent>
         </Select>
         {errors.role && (
