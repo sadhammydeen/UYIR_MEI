@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Search, Tag, Calendar, User, Heart, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 const StoryCard = ({ 
   image, 

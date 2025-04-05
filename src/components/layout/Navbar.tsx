@@ -4,7 +4,7 @@ import {
   Menu, X, Search, User, LogOut, ChevronDown, 
   LayoutDashboard, Settings, Heart, MessageSquare
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 import { useLoading } from '@/contexts/LoadingContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

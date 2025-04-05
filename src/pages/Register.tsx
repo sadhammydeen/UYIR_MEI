@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import RegisterForm from '@/components/auth/RegisterForm';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 const Register = () => {
   const { isAuthenticated } = useAuth();

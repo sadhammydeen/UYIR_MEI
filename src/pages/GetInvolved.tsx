@@ -4,7 +4,7 @@ import {
   Briefcase, GraduationCap, FileText, CheckCircle, User,
   Users, Mail, Phone, BookOpen, PenTool, Globe, ShieldCheck
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 const GetInvolved = () => {
   const [activeTab, setActiveTab] = useState('volunteer');

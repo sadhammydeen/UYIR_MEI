@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArrowRight, BookOpen, Utensils, Home, Stethoscope, GraduationCap, LifeBuoy } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 
 const ServiceCard = ({ icon, title, description, color }: { icon: React.ReactNode, title: string, description: string, color: string }) => {
   return (

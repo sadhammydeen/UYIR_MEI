@@ -4,7 +4,7 @@ import {
   ArrowRight, MessageCircle, CheckCircle, HelpCircle,
   Briefcase, Utensils, Heart, Stethoscope
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 import BeneficiaryService, { ServiceRequest } from '@/api/services/beneficiary.service';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';

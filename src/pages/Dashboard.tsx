@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { 
   ArrowUpRight, Users, Calendar, DollarSign, BarChart3, 
-  Heart, BookOpen, Clock, Trophy, HandHeart, Activity 
+  Heart, BookOpen, Clock, Trophy, Activity 
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import DonorDashboard from './DonorDashboard';
