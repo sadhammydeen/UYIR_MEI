@@ -34,12 +34,12 @@ const Hero = () => {
       <div 
         className="absolute inset-0 z-0 overflow-hidden"
         style={{ 
-          backgroundImage: `url('/images/heroes/main-hero.png')`,
+          backgroundImage: `url('/images/heroes/children-background.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       >
-        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="absolute inset-0 bg-black/60"></div>
       </div>
 
       {/* Content */}
