@@ -1,6 +1,5 @@
-
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/button';
 // Import buttonVariants differently to avoid case sensitivity issues
-import { buttonVariants } from '@/components/ui/button.tsx';
+import { buttonVariants } from '@/components/ui/button';
 
 export { Button, buttonVariants };

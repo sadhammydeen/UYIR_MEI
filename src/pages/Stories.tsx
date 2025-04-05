@@ -65,7 +65,7 @@ const StoryCard = ({
             </div>
           </div>
           
-          <Button variant="default" size="sm" className="group-hover:bg-theuyir-pink group-hover:text-white group-hover:border-theuyir-pink transition-all duration-300">
+          <Button variant="primary" size="sm" className="group-hover:bg-theuyir-pink group-hover:text-white group-hover:border-theuyir-pink transition-all duration-300">
             Read More <ArrowRight size={14} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </div>
@@ -412,7 +412,7 @@ const Stories = () => {
                       </label>
                     </div>
                     
-                    <Button variant="default" size="lg" type="submit" className="w-full">
+                    <Button variant="primary" size="lg" type="submit" className="w-full">
                       Submit Your Story
                     </Button>
                   </form>
@@ -452,7 +452,7 @@ const Stories = () => {
               helps create more inspiring stories of hope and transformation.
             </p>
             <div className="flex flex-wrap justify-center gap-4 fade-in-section opacity-0" style={{ animationDelay: '0.4s' }}>
-              <Button variant="default" size="lg">
+              <Button variant="primary" size="lg">
                 Donate Now
               </Button>
               <Button size="lg" className="bg-white text-theuyir-pink hover:bg-white/90">

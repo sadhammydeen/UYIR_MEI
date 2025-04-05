@@ -93,7 +93,7 @@ const BeneficiaryApplication = () => {
               </ol>
             </div>
             <div className="flex flex-col md:flex-row gap-4 justify-center">
-              <Button variant="default" onClick={() => navigate('/dashboard')}>
+              <Button variant="primary" onClick={() => navigate('/dashboard')}>
                 Go to Dashboard
               </Button>
               <Button variant="outline" onClick={() => navigate('/services')}>
@@ -160,7 +160,7 @@ const BeneficiaryApplication = () => {
             If you need assistance with your application or have questions about our support programs, our team is here to help.
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <Button variant="default" asChild>
+            <Button variant="primary" asChild>
               <a href="tel:+919876543210" className="flex items-center">
                 <span>Call Us: +91 98765 43210</span>
               </a>

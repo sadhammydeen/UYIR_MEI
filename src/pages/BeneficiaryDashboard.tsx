@@ -219,7 +219,7 @@ const BeneficiaryDashboard: React.FC = () => {
         ) : (
           <div className="text-center py-12">
             <p className="text-gray-600 mb-4">You haven't made any service requests yet.</p>
-            <Button variant="default" asChild>
+            <Button variant="primary" asChild>
               <a href="/services">Browse Available Services</a>
             </Button>
           </div>
@@ -324,7 +324,7 @@ const BeneficiaryDashboard: React.FC = () => {
             <p className="text-gray-600">Our team is here to help. Explore our services or contact us for assistance.</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button variant="default" asChild className="flex items-center group">
+            <Button variant="primary" asChild className="flex items-center group">
               <a href="/services">
                 Browse Services
                 <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />

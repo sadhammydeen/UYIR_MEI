@@ -11,6 +11,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
 }
 
+// Define buttonVariants to match the variant types
+export const buttonVariants = {
+  primary: "bg-theuyir-yellow text-black hover:brightness-95 disabled:hover:brightness-100",
+  secondary: "bg-theuyir-pink text-white hover:brightness-95 disabled:hover:brightness-100",
+  outline: "border border-black text-black hover:bg-black/5 disabled:hover:bg-transparent",
+};
+
 const Button = ({
   variant = 'primary',
   size = 'md',
@@ -23,11 +30,7 @@ const Button = ({
 }: ButtonProps) => {
   const baseClasses = "font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
   
-  const variantClasses = {
-    primary: "bg-theuyir-yellow text-black hover:brightness-95 disabled:hover:brightness-100",
-    secondary: "bg-theuyir-pink text-white hover:brightness-95 disabled:hover:brightness-100",
-    outline: "border border-black text-black hover:bg-black/5 disabled:hover:bg-transparent",
-  };
+  const variantClasses = buttonVariants;
   
   const sizeClasses = {
     sm: "py-1.5 px-4 text-sm",

@@ -28,7 +28,7 @@ const ServiceCard = ({ icon, title, description, color }: { icon: React.ReactNod
             <span className="text-gray-600">Volunteer coordination</span>
           </li>
         </ul>
-        <Button variant="default" size="default" className="mt-6 w-full group">
+        <Button variant="primary" size="md" className="mt-6 w-full group">
           Learn More <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
         </Button>
       </div>
@@ -323,7 +323,7 @@ const Services = () => {
                     Combining our platform's reach with your organization's expertise, we can create a greater impact for beneficiaries across communities.
                   </p>
                   
-                  <Button variant="default" size="lg" className="group">
+                  <Button variant="primary" size="lg" className="group">
                     Become a Partner <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                   </Button>
                 </div>

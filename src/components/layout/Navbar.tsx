@@ -211,9 +211,9 @@ const Navbar = () => {
               <div className="flex items-center space-x-3">
                 <Link to="/login" onClick={() => handleNavigation('/login')}>
                   <Button 
-                    variant="default" 
+                    variant="primary" 
                     size="sm" 
-                    className="bg-theuyir-pink hover:bg-theuyir-pink-dark text-white transition-transform duration-500 ease-in-out hover:scale-105 flex items-center"
+                    className="bg-theuyir-pink hover:bg-theuyir-pink-dark text-white animate-flicker transition-transform hover:scale-105 flex items-center"
                   >
                     <Heart size={16} className="mr-1" /> DONATE
                   </Button>

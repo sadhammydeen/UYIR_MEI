@@ -269,7 +269,7 @@ const About = () => {
               Whether you want to volunteer, donate, or partner with us as an NGO, there are many ways to get involved and make a difference.
             </p>
             <div className="flex flex-wrap justify-center gap-4 fade-in-section opacity-0" style={{ animationDelay: '0.4s' }}>
-              <Button variant="default" size="lg">
+              <Button variant="primary" size="lg">
                 Get Involved
               </Button>
               <Button size="lg" className="bg-white text-theuyir-pink hover:bg-white/90">

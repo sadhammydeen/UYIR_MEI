@@ -26,7 +26,7 @@ const NotFound = () => {
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
-            variant="default"
+            variant="primary"
             size="lg"
             className="group"
             onClick={() => window.history.back()}
@@ -35,7 +35,7 @@ const NotFound = () => {
             Go Back
           </Button>
           <Link to="/">
-            <Button variant="default" className="mt-4">
+            <Button variant="primary" className="mt-4">
               <Home className="mr-2" /> Back to Home
             </Button>
           </Link>

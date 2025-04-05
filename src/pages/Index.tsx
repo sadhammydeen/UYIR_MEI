@@ -153,7 +153,7 @@ const Index = () => {
                       </div>
                     </div>
                     
-                    <Button variant="default" size="default" className="w-full">
+                    <Button variant="primary" size="md" className="w-full">
                       Donate Now
                     </Button>
                   </div>
@@ -236,7 +236,7 @@ const Index = () => {
                 </div>
                 
                 <Link to="/get-involved" onClick={() => handleNavigation('/get-involved')}>
-                  <Button variant="default" size="lg" className="group">
+                  <Button variant="primary" size="lg" className="group">
                     Join as Volunteer
                     <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
                   </Button>

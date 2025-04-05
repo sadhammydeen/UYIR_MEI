@@ -209,7 +209,7 @@ const VolunteerDashboard: React.FC = () => {
         ) : (
           <div className="text-center py-12">
             <p className="text-gray-600 mb-4">You haven't signed up for any volunteer opportunities yet.</p>
-            <Button variant="default" asChild>
+            <Button variant="primary" asChild>
               <a href="/get-involved">Browse Opportunities</a>
             </Button>
           </div>
@@ -323,7 +323,7 @@ const VolunteerDashboard: React.FC = () => {
             <h3 className="text-xl font-bold text-theuyir-darkgrey mb-2">Ready to Help Again?</h3>
             <p className="text-gray-600">Explore new volunteer opportunities that match your interests.</p>
           </div>
-          <Button variant="default" asChild className="flex items-center group">
+          <Button variant="primary" asChild className="flex items-center group">
             <a href="/get-involved">
               Find Opportunities
               <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />

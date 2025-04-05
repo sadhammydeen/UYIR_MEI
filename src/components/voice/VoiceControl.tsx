@@ -97,7 +97,7 @@ export const VoiceControl: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <Button 
-              variant="default" 
+              variant="primary" 
               onClick={handleSpeak}
               disabled={isSpeaking || !textToSpeak.trim()}
             >

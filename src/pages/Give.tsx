@@ -147,7 +147,7 @@ const Give = () => {
                 Your donation has been successfully processed. A confirmation email with receipt details has been sent to your registered email address.
               </p>
               <Button 
-                variant="default" 
+                variant="primary" 
                 onClick={() => setDonationSuccess(false)}
               >
                 Make Another Donation
@@ -232,8 +232,8 @@ const Give = () => {
                       </div>
                       
                       <Button 
-                        variant="default" 
-                        size="default" 
+                        variant="primary" 
+                        size="md" 
                         className="w-full group"
                         onClick={handleProceedToPayment}
                       >
@@ -366,7 +366,7 @@ const Give = () => {
                     Donate essential items such as food, clothing, books, medical supplies, or other goods that can 
                     directly benefit those in need.
                   </p>
-                  <Button variant="default" size="default" className="w-full group">
+                  <Button variant="primary" size="md" className="w-full group">
                     Donate with Material Goods <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
@@ -391,7 +391,7 @@ const Give = () => {
                     Engage your company in CSR initiatives, sponsorships, or employee giving programs to create 
                     a larger collective impact.
                   </p>
-                  <Button variant="default" size="default" className="w-full group">
+                  <Button variant="primary" size="md" className="w-full group">
                     Apply for Corporate Matching <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
@@ -416,7 +416,7 @@ const Give = () => {
                     Create a lasting impact by including Uyir Mei in your will or estate plans, ensuring your 
                     values live on through your generosity.
                   </p>
-                  <Button variant="default" size="default" className="w-full group">
+                  <Button variant="primary" size="md" className="w-full group">
                     Explore Options <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                   </Button>
                 </div>
@@ -437,7 +437,7 @@ const Give = () => {
                         <h3 className="text-xl font-bold text-theuyir-darkgrey">Credit/Debit Card</h3>
                       </div>
                       <p className="text-gray-600 mb-6">Make a secure donation using your credit or debit card. All major cards accepted.</p>
-                      <Button variant="default" size="default" className="w-full group">
+                      <Button variant="primary" size="md" className="w-full group">
                         Donate by Card <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </div>
@@ -453,7 +453,7 @@ const Give = () => {
                         <h3 className="text-xl font-bold text-theuyir-darkgrey">UPI</h3>
                       </div>
                       <p className="text-gray-600 mb-6">Use UPI to make a quick and easy donation from your mobile device.</p>
-                      <Button variant="default" size="default" className="w-full group">
+                      <Button variant="primary" size="md" className="w-full group">
                         Pay via UPI <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </div>
@@ -469,7 +469,7 @@ const Give = () => {
                         <h3 className="text-xl font-bold text-theuyir-darkgrey">Recurring Giving</h3>
                       </div>
                       <p className="text-gray-600 mb-6">Set up a monthly donation to provide consistent support for our ongoing programs.</p>
-                      <Button variant="default" size="default" className="w-full group">
+                      <Button variant="primary" size="md" className="w-full group">
                         Give Monthly <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </div>
@@ -536,7 +536,7 @@ const Give = () => {
                   dreams of becoming a doctor. We could never have afforded these resources on our own." 
                   <span className="font-medium">— Lakshmi, parent of a beneficiary</span>
                 </p>
-                <Button variant="secondary" size="default" className="group">
+                <Button variant="secondary" size="md" className="group">
                   Read Full Story <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </div>
@@ -612,7 +612,7 @@ const Give = () => {
               
               <div className="text-center mt-10 fade-in-section opacity-0">
                 <p className="text-gray-600 mb-4">Still have questions about donating?</p>
-                <Button variant="secondary" size="default">
+                <Button variant="secondary" size="md">
                   Contact Our Donor Support Team
                 </Button>
               </div>
@@ -631,7 +631,7 @@ const Give = () => {
               Every contribution, no matter the size, brings us one step closer to a more equitable society.
             </p>
             <div className="flex flex-wrap justify-center gap-4 fade-in-section opacity-0" style={{ animationDelay: '0.4s' }}>
-              <Button variant="default" size="lg">
+              <Button variant="primary" size="lg">
                 Donate Now
               </Button>
               <Button size="lg" className="bg-white text-theuyir-pink hover:bg-white/90">

@@ -152,7 +152,7 @@ const DonorDashboard: React.FC = () => {
         ) : (
           <div className="text-center py-12">
             <p className="text-gray-600 mb-4">You haven't made any donations yet.</p>
-            <Button variant="default" asChild>
+            <Button variant="primary" asChild>
               <a href="/give">Make Your First Donation</a>
             </Button>
           </div>
@@ -183,7 +183,7 @@ const DonorDashboard: React.FC = () => {
             <h3 className="text-xl font-bold text-theuyir-darkgrey mb-2">Make Another Donation</h3>
             <p className="text-gray-600">Your continued support helps us create lasting impact.</p>
           </div>
-          <Button variant="default" asChild className="flex items-center group">
+          <Button variant="primary" asChild className="flex items-center group">
             <a href="/give">
               Donate Now
               <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
