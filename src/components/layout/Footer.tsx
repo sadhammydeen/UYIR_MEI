@@ -71,7 +71,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed font-sans">
-              Since 2010, we've been working tirelessly to create lasting change in communities across India. Every donation, every volunteer hour, and every story of hope brings us closer to our vision of a more equitable society.
+              In a world where suffering often goes unnoticed, your compassion becomes the lifeline for those in need. Together, we restore dignity and kindle hope where darkness once prevailed.
             </p>
             <div className="flex space-x-4">
               {socialLinks.map(({ icon: Icon, href, label }) => (

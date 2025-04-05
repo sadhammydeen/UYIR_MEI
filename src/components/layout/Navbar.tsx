@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search } from 'lucide-react';
+import { 
+  Menu, X, Search, User, LogOut, ChevronDown, 
+  LayoutDashboard, Settings, Heart
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLoading } from '@/contexts/LoadingContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { setIsLoading, setLoadingText } = useLoading();
+  const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -37,6 +50,18 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      ?.split(' ')
+      .map(part => part.charAt(0))
+      .join('')
+      .toUpperCase() || 'U';
   };
 
   return (
@@ -81,13 +106,72 @@ const Navbar = () => {
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-theuyir-yellow transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
             </Link>
           ))}
-          <Button 
-            variant="default" 
-            size="default" 
-            className="animate-pulse-soft transition-transform hover:scale-105 text-sm lg:text-base"
-          >
-            DONATE
-          </Button>
+          
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center space-x-2 focus:outline-none transition-all duration-300 hover:scale-105">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user?.avatar} alt={user?.name || 'User'} />
+                    <AvatarFallback className="bg-theuyir-yellow text-theuyir-darkgrey text-xs">
+                      {getInitials(user?.name || 'User')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <ChevronDown className="h-4 w-4 text-theuyir-darkgrey" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-2 py-1.5 text-sm font-medium text-theuyir-darkgrey">
+                  {user?.name}
+                </div>
+                <div className="px-2 pb-1.5 text-xs text-gray-500">
+                  {user?.email}
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link 
+                    to="/dashboard" 
+                    className="flex items-center cursor-pointer"
+                    onClick={() => handleNavigation('/dashboard')}
+                  >
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link 
+                    to="/profile" 
+                    className="flex items-center cursor-pointer"
+                    onClick={() => handleNavigation('/profile')}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    My Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="flex items-center cursor-pointer text-red-600"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex items-center space-x-3">
+              <Link to="/login" onClick={() => handleNavigation('/login')}>
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="bg-theuyir-pink hover:bg-theuyir-pink-dark text-white animate-flicker transition-transform hover:scale-105 flex items-center"
+                >
+                  <Heart size={16} className="mr-1" /> DONATE
+                </Button>
+              </Link>
+            </div>
+          )}
+          
           <button
             className="text-theuyir-darkgrey hover:text-theuyir-pink transition-all duration-300 transform hover:scale-110"
             aria-label="Search"
@@ -113,6 +197,21 @@ const Navbar = () => {
         } overflow-hidden`}
       >
         <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
+          {isAuthenticated && (
+            <div className="flex items-center py-2 border-b border-gray-100 mb-2">
+              <Avatar className="h-10 w-10 mr-3">
+                <AvatarImage src={user?.avatar} alt={user?.name || 'User'} />
+                <AvatarFallback className="bg-theuyir-yellow text-theuyir-darkgrey">
+                  {getInitials(user?.name || 'User')}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="font-medium text-theuyir-darkgrey">{user?.name}</div>
+                <div className="text-xs text-gray-500">{user?.email}</div>
+              </div>
+            </div>
+          )}
+
           {[
             { path: '/about', label: 'ABOUT US' },
             { path: '/services', label: 'WHAT WE DO' },
@@ -131,10 +230,54 @@ const Navbar = () => {
               {label}
             </Link>
           ))}
+
+          {isAuthenticated ? (
+            <>
+              <Link 
+                to="/dashboard" 
+                className="flex items-center py-2 pl-2 border-l-4 border-transparent"
+                onClick={() => handleNavigation('/dashboard')}
+              >
+                <LayoutDashboard className="mr-2 h-5 w-5" />
+                DASHBOARD
+              </Link>
+              <Link 
+                to="/profile" 
+                className="flex items-center py-2 pl-2 border-l-4 border-transparent"
+                onClick={() => handleNavigation('/profile')}
+              >
+                <User className="mr-2 h-5 w-5" />
+                MY PROFILE
+              </Link>
+              <button 
+                className="flex items-center py-2 pl-2 border-l-4 border-transparent text-red-600 w-full text-left"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-5 w-5" />
+                LOG OUT
+              </button>
+            </>
+          ) : (
+            <div className="flex flex-col space-y-3 pt-2">
+              <Link 
+                to="/login" 
+                className="w-full"
+                onClick={() => handleNavigation('/login')}
+              >
+                <Button 
+                  variant="default" 
+                  className="w-full justify-center bg-theuyir-pink hover:bg-theuyir-pink-dark text-white animate-flicker flex items-center justify-center space-x-2"
+                >
+                  <Heart size={16} />
+                  <span>DONATE</span>
+                </Button>
+              </Link>
+            </div>
+          )}
+
           <div className="flex items-center justify-between pt-2">
-            <Button variant="default" size="default" className="w-full">DONATE</Button>
             <button 
-              className="ml-4 text-theuyir-darkgrey hover:text-theuyir-pink"
+              className="text-theuyir-darkgrey hover:text-theuyir-pink"
               aria-label="Search"
             >
               <Search size={20} />

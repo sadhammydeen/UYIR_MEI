@@ -9,11 +9,22 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogOverlay } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 import PaymentMethodLogos from '@/components/shared/PaymentMethodLogos';
+import DonationCheckout from '@/components/donations/DonationCheckout';
+import DonationService from '@/api/services/donation.service';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLoading } from '@/contexts/LoadingContext';
 
 const Give = () => {
+  const { isAuthenticated } = useAuth();
+  const { setIsLoading, setLoadingText } = useLoading();
   const [donationAmount, setDonationAmount] = useState<number | string>('');
   const [donationType, setDonationType] = useState('oneTime');
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [donationSuccess, setDonationSuccess] = useState(false);
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -35,10 +46,25 @@ const Give = () => {
       observer.observe(el);
     });
 
+    fetchCampaigns();
+
     return () => {
       observer.disconnect();
     };
   }, []);
+
+  const fetchCampaigns = async () => {
+    try {
+      setIsLoading(true);
+      setLoadingText('Loading campaigns...');
+      const campaignData = await DonationService.getCampaigns();
+      setCampaigns(campaignData);
+    } catch (error) {
+      console.error('Error fetching campaigns:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handlePresetAmount = (amount: number) => {
     setDonationAmount(amount);
@@ -49,6 +75,35 @@ const Give = () => {
     if (value === '' || /^\d+$/.test(value)) {
       setDonationAmount(value);
     }
+  };
+
+  const handleProceedToPayment = () => {
+    if (!donationAmount || Number(donationAmount) < 10) {
+      toast.error('Please enter a valid donation amount (minimum ₹10)');
+      return;
+    }
+    
+    if (!isAuthenticated) {
+      toast.error('Please log in to make a donation', {
+        action: {
+          label: 'Login',
+          onClick: () => window.location.href = '/login?redirect=/give'
+        }
+      });
+      return;
+    }
+    
+    setIsCheckoutOpen(true);
+  };
+
+  const handleDonationSuccess = () => {
+    setIsCheckoutOpen(false);
+    setDonationSuccess(true);
+    setDonationAmount('');
+  };
+
+  const handleDonationCancel = () => {
+    setIsCheckoutOpen(false);
   };
 
   return (
@@ -79,6 +134,27 @@ const Give = () => {
             </div>
           </div>
         </section>
+        
+        {/* Donation Success Message */}
+        {donationSuccess && (
+          <div className="bg-green-50 border border-green-200 p-6 rounded-lg shadow-md max-w-3xl mx-auto -mt-10 mb-10 relative z-20">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <Heart className="text-green-600" size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-theuyir-darkgrey mb-2">Thank You for Your Generosity!</h3>
+              <p className="text-gray-600 mb-4">
+                Your donation has been successfully processed. A confirmation email with receipt details has been sent to your registered email address.
+              </p>
+              <Button 
+                variant="default" 
+                onClick={() => setDonationSuccess(false)}
+              >
+                Make Another Donation
+              </Button>
+            </div>
+          </div>
+        )}
         
         {/* Donation Form Section */}
         <section className="py-20 bg-white">
@@ -155,7 +231,12 @@ const Give = () => {
                         </div>
                       </div>
                       
-                      <Button variant="default" size="default" className="w-full group">
+                      <Button 
+                        variant="default" 
+                        size="default" 
+                        className="w-full group"
+                        onClick={handleProceedToPayment}
+                      >
                         Proceed to Payment <ArrowRight size={16} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                       </Button>
                     </div>
@@ -560,6 +641,18 @@ const Give = () => {
           </div>
         </section>
       </main>
+
+      {/* Donation Checkout Dialog */}
+      <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
+        <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
+          <DonationCheckout 
+            amount={Number(donationAmount)}
+            donationType={donationType as 'oneTime' | 'monthly'}
+            onSuccess={handleDonationSuccess}
+            onCancel={handleDonationCancel}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
