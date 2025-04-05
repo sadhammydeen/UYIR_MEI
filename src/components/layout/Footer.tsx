@@ -34,6 +34,8 @@ const Footer = () => {
     { path: '/services', label: 'What We Do' },
     { path: '/get-involved', label: 'Get Involved' },
     { path: '/give', label: 'Ways to Give' },
+    { path: '/needs-donate', label: 'Donate to Needs' },
+    { path: '/impact-tracker', label: 'Impact Tracker' },
     { path: '/stories', label: 'Impact Stories' }
   ];
 

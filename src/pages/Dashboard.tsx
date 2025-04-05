@@ -60,6 +60,8 @@ const Dashboard = () => {
         return <VolunteerDashboard />;
       case 'beneficiary':
         return <BeneficiaryDashboard />;
+      case 'ngo':
+        return <Navigate to="/ngo-dashboard" replace />;
       default:
         return <DonorDashboard />;
     }
@@ -132,7 +134,7 @@ const Dashboard = () => {
             <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow group">
               <div className="flex justify-between items-start mb-4">
                 <div className="bg-theuyir-pink/10 p-3 rounded-full">
-                  <HandHeart size={28} className="text-theuyir-pink" />
+                  <Heart size={28} className="text-theuyir-pink" />
                 </div>
                 <ArrowUpRight size={20} className="text-theuyir-pink opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>

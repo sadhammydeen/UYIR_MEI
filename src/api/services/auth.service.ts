@@ -7,7 +7,7 @@ export interface LoginCredentials {
 
 export interface RegisterData extends LoginCredentials {
   name: string;
-  role?: 'user' | 'volunteer' | 'beneficiary' | 'admin';
+  role?: 'user' | 'volunteer' | 'beneficiary' | 'admin' | 'ngo';
   phone?: string;
 }
 

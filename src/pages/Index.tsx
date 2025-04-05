@@ -178,7 +178,7 @@ const Index = () => {
           <p className="max-w-2xl mx-auto mb-8">
             We believe every small act can transform lives. Join us in creating meaningful change for our communities.
           </p>
-          <div className="flex items-center justify-center space-x-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Link to="/get-involved">
               <button className="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition-colors">
                 Get Involved
@@ -187,6 +187,16 @@ const Index = () => {
             <Link to="/give">
               <button className="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition-colors">
                 Give Support
+              </button>
+            </Link>
+            <Link to="/needs-donate">
+              <button className="bg-amber-600 text-white px-6 py-2 rounded shadow hover:bg-amber-700 transition-colors">
+                Donate to Needs
+              </button>
+            </Link>
+            <Link to="/impact-tracker">
+              <button className="bg-purple-600 text-white px-6 py-2 rounded shadow hover:bg-purple-700 transition-colors">
+                See Our Impact
               </button>
             </Link>
           </div>

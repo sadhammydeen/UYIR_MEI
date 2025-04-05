@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLoading } from '@/contexts/LoadingContext';
-import { Heart, Users, Building2, HandHeart, ArrowRight, GraduationCap, Home, Stethoscope } from 'lucide-react';
+import { Heart, Users, Building2, ArrowRight, GraduationCap, Home, Stethoscope } from 'lucide-react';
 
 const Features = () => {
   const { setIsLoading, setLoadingText } = useLoading();
