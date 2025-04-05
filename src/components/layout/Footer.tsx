@@ -61,7 +61,7 @@ const Footer = () => {
           <div className="relative z-10">
             <div className="flex items-center mb-6 group">
               <img 
-                src="/lovable-uploads/logo.png"
+                src="src/resources/b490f380-ac02-47bc-999e-0cb3e0c34afc.png"
                 alt="Uyir Mei"
                 className="h-16 w-auto transition-transform duration-300 group-hover:scale-105"
               />
