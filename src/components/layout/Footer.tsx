@@ -161,7 +161,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Payment Methods */}
+        {/* Payment Methods 
         <div className="mt-12 pt-8 border-t border-gray-700/50">
           <h3 className="text-lg font-semibold mb-4 text-center font-display">Secure Payment Methods</h3>
           <div className="flex flex-wrap justify-center items-center gap-6">
@@ -174,7 +174,7 @@ const Footer = () => {
               />
             ))}
           </div>
-        </div>
+        </div>*/}
 
         <div className="border-t border-gray-700/50 mt-8 pt-8 text-center text-gray-400">
           <p className="text-sm font-sans">© 2025 Uyir Mei. All rights reserved.</p>
