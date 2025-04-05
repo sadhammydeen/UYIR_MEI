@@ -1,0 +1,137 @@
+{
+  "knowledge_base": {
+    "donate": {
+      "text": "You can donate by clicking the 'DONATE' button in the navigation bar or visiting our 'Ways to Give' page. We accept one-time and recurring donations through various payment methods including credit/debit cards, UPI, and bank transfers. Every contribution, no matter how small, makes a significant impact.",
+      "links": [
+        {
+          "title": "Ways to Give - Uyir Mei",
+          "url": "/give",
+          "description": "Explore different ways to support our cause through donations."
+        }
+      ]
+    },
+    
+    "volunteer": {
+      "text": "We'd love to have you as a volunteer! Please visit our 'Get Involved' page to see current volunteer opportunities. We need help with event organization, teaching, mentoring, administrative tasks, and skilled services like medical care and counseling. You can commit as little as 2 hours a week.",
+      "links": [
+        {
+          "title": "Volunteer Opportunities - Uyir Mei",
+          "url": "/get-involved",
+          "description": "Find volunteer opportunities that match your skills and interests."
+        }
+      ]
+    },
+    
+    "help": {
+      "text": "There are many ways to help - you can donate financially, volunteer your time and skills, spread awareness about our cause on social media, become a corporate partner, or donate goods and supplies. Every contribution makes a difference in the lives of those we serve.",
+      "links": [
+        {
+          "title": "Get Involved - Uyir Mei",
+          "url": "/get-involved",
+          "description": "Discover how you can contribute to our mission."
+        }
+      ]
+    },
+    
+    "contact": {
+      "text": "You can reach us at contact@uyirmei.org or call us at +91 9876543210. Our office is located at 123 NGO Street, Chennai, Tamil Nadu, India - 600001. Our office hours are Monday to Friday, 9 AM to 6 PM.",
+      "links": [
+        {
+          "title": "Contact Us - Uyir Mei",
+          "url": "/contact",
+          "description": "Find our contact information and office locations."
+        }
+      ]
+    },
+    
+    "about": {
+      "text": "Uyir Mei is a non-profit organization dedicated to connecting compassion with those in need. We've been working since 2010 to create lasting change in communities across India. Our mission is to empower vulnerable populations through education, healthcare, food security, and community development initiatives.",
+      "links": [
+        {
+          "title": "About Us - Uyir Mei",
+          "url": "/about",
+          "description": "Learn more about our mission, vision, and history."
+        }
+      ]
+    },
+    
+    "services": {
+      "text": "Our services include education support (scholarships, school supplies, tutoring), healthcare assistance (medical camps, treatment funding, mental health services), food security programs (daily meals, nutrition education), and community development initiatives (skills training, infrastructure projects).",
+      "links": [
+        {
+          "title": "Our Services - Uyir Mei",
+          "url": "/services",
+          "description": "Explore the various services we offer to communities in need."
+        }
+      ]
+    },
+    
+    "locations": {
+      "text": "We currently serve communities in Tamil Nadu, Karnataka, and Andhra Pradesh, with a focus on both urban slums and rural villages. Our headquarters is in Chennai, with field offices in Bangalore, Hyderabad, and five rural districts.",
+      "links": [
+        {
+          "title": "Our Locations - Uyir Mei",
+          "url": "/about#locations",
+          "description": "See where we work across India."
+        }
+      ]
+    },
+    
+    "stories": {
+      "text": "You can read inspiring stories about the impact of our work on our 'Stories' page. These include accounts of children accessing education, families receiving healthcare, and communities being transformed through our various programs.",
+      "links": [
+        {
+          "title": "Success Stories - Uyir Mei",
+          "url": "/stories",
+          "description": "Read personal stories of transformation from our beneficiaries."
+        }
+      ]
+    },
+    
+    "donate_items": {
+      "text": "Besides financial contributions, we accept donations of school supplies, clothes, books, toys, food items, and medical supplies. Please contact us before sending goods to ensure we can distribute them effectively.",
+      "links": [
+        {
+          "title": "In-Kind Donations - Uyir Mei",
+          "url": "/give#in-kind",
+          "description": "Learn about donating goods and supplies."
+        }
+      ]
+    },
+    
+    "events": {
+      "text": "We organize various events throughout the year including fundraisers, awareness campaigns, volunteer drives, and community service days. Check our website regularly or sign up for our newsletter to stay updated.",
+      "links": [
+        {
+          "title": "Upcoming Events - Uyir Mei",
+          "url": "/events",
+          "description": "View our calendar of upcoming events and activities."
+        }
+      ]
+    },
+    
+    "partner": {
+      "text": "We welcome partnerships with corporations, schools, other NGOs, and government agencies. Partners can contribute through CSR initiatives, employee volunteering, skill-sharing, and collaborative projects. Please email partnerships@uyirmei.org for more information.",
+      "links": [
+        {
+          "title": "Partnership Opportunities - Uyir Mei",
+          "url": "/get-involved#partners",
+          "description": "Explore how your organization can partner with us."
+        }
+      ]
+    }
+  },
+  
+  "topic_keywords": {
+    "donate": ["donate", "donation", "give money", "contribute", "financial", "payment", "fund", "support financially"],
+    "volunteer": ["volunteer", "help out", "give time", "volunteering", "service", "serve"],
+    "contact": ["contact", "reach", "email", "phone", "call", "address", "location", "office"],
+    "about": ["about", "history", "mission", "vision", "who are you", "organization", "background"],
+    "services": ["services", "programs", "initiatives", "projects", "provide", "offering", "help"],
+    "locations": ["where", "places", "regions", "areas", "communities", "serve", "location", "city"],
+    "stories": ["stories", "testimonials", "impact", "success", "beneficiaries", "helped"],
+    "donate_items": ["items", "goods", "supplies", "clothes", "books", "food"],
+    "events": ["events", "happening", "calendar", "schedule", "upcoming", "participate"],
+    "partner": ["partner", "corporate", "business", "collaboration", "csr", "company", "school"]
+  }
+} 

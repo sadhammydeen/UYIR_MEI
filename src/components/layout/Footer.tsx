@@ -67,7 +67,7 @@ const Footer = () => {
               />
               <div className="ml-3">
                 <h3 className="text-xl font-semibold font-display">UYIR MEI</h3>
-                <p className="text-xs text-theuyir-yellow tracking-wider font-medium">CONNECTING EMPATHY</p>
+                <p className="text-xs text-theuyir-yellow tracking-wider font-medium">CONNECTING COMPASSION</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed font-sans">
