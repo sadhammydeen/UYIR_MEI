@@ -7,36 +7,54 @@ interface CheckboxItem {
   label: string;
 }
 
-interface CheckboxGroupProps {
-  items: CheckboxItem[];
-  values: string[];
-  onChange: (values: string[]) => void;
+export interface CheckboxGroupProps {
+  items?: CheckboxItem[];
+  values?: string[];
+  onChange?: (values: string[]) => void;
   className?: string;
   orientation?: 'horizontal' | 'vertical';
+  value?: string[];
+  onValueChange?: (values: string[]) => void;
+  children?: React.ReactNode;
 }
 
 export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   items,
-  values,
+  values = [],
   onChange,
+  value = [],
+  onValueChange,
   className = '',
-  orientation = 'vertical'
+  orientation = 'vertical',
+  children
 }) => {
   const handleCheckboxChange = (id: string, checked: boolean) => {
+    // Support both API styles (onChange and onValueChange)
+    const currentValues = value.length > 0 ? value : values;
+    const handleChange = onValueChange || onChange;
+    
+    if (!handleChange) return;
+    
     if (checked) {
-      onChange([...values, id]);
+      handleChange([...currentValues, id]);
     } else {
-      onChange(values.filter(value => value !== id));
+      handleChange(currentValues.filter(v => v !== id));
     }
   };
 
+  // If children are provided, render them directly
+  if (children) {
+    return <div className={className}>{children}</div>;
+  }
+
+  // Otherwise render the standard checkbox list
   return (
     <div className={`${orientation === 'horizontal' ? 'flex flex-wrap gap-4' : 'space-y-2'} ${className}`}>
-      {items.map((item) => (
+      {items?.map((item) => (
         <div key={item.id} className="flex items-center space-x-2">
           <Checkbox
             id={`checkbox-${item.id}`}
-            checked={values.includes(item.id)}
+            checked={value.includes(item.id) || values.includes(item.id)}
             onCheckedChange={(checked) => handleCheckboxChange(item.id, checked === true)}
           />
           <Label

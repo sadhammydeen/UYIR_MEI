@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -15,9 +15,10 @@ import { CalendarIcon, ChevronDownIcon, CheckIcon, XIcon, ClockIcon } from 'luci
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import NGOService, { CollaborationRequest, NGOProfile } from '@/api/services/ngo.service';
+import NGOService, { CollaborationRequest, NgoProfile } from '@/api/services/ngo.service';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Form schema for collaboration request
 const requestSchema = z.object({
@@ -40,18 +41,21 @@ const CollaborationRequests: React.FC = () => {
   const [incomingRequests, setIncomingRequests] = useState<CollaborationRequest[]>([]);
   const [outgoingRequests, setOutgoingRequests] = useState<CollaborationRequest[]>([]);
   const [pastCollaborations, setPastCollaborations] = useState<CollaborationRequest[]>([]);
-  const [availableNGOs, setAvailableNGOs] = useState<NGOProfile[]>([]);
+  const [availableNGOs, setAvailableNGOs] = useState<NgoProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<CollaborationRequest | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isResponseOpen, setIsResponseOpen] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form setup
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(requestSchema),
     defaultValues: {
+      receiverId: '',
       message: '',
       projectDetails: {
         title: '',
@@ -106,11 +110,20 @@ const CollaborationRequests: React.FC = () => {
 
   // Handle form submission
   const onSubmit = async (values: RequestFormValues) => {
+    setIsSubmitting(true);
     try {
       const request = {
+        senderId: user?.id || '',
         receiverId: values.receiverId,
         message: values.message,
-        projectDetails: values.projectDetails,
+        projectDetails: {
+          title: values.projectDetails.title,
+          description: values.projectDetails.description,
+          startDate: values.projectDetails.startDate ? values.projectDetails.startDate.toISOString() : undefined,
+          endDate: values.projectDetails.endDate ? values.projectDetails.endDate.toISOString() : undefined,
+          location: values.projectDetails.location,
+          resourcesNeeded: values.projectDetails.resourcesNeeded
+        }
       };
       
       await NGOService.sendCollaborationRequest(request);
@@ -137,6 +150,8 @@ const CollaborationRequests: React.FC = () => {
         description: 'Failed to send collaboration request',
         variant: 'destructive',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -1,120 +1,82 @@
 import React from 'react';
-import Button from '@/components/ui/button.tsx';
+import Button from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  siblingCount?: number;
 }
 
-export function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-  siblingCount = 1,
-}: PaginationProps) {
-  // Generate page numbers to display
-  const generatePagination = () => {
-    // Always show first and last page
-    const firstPage = 1;
-    const lastPage = totalPages;
-
-    // Calculate range of pages to show around current page
-    const leftSiblingIndex = Math.max(currentPage - siblingCount, firstPage);
-    const rightSiblingIndex = Math.min(currentPage + siblingCount, lastPage);
-
-    // Determine if we need to show ellipses
-    const shouldShowLeftDots = leftSiblingIndex > firstPage + 1;
-    const shouldShowRightDots = rightSiblingIndex < lastPage - 1;
-
-    // Generate page numbers
-    const pageNumbers = [];
-
-    // Always add first page
-    if (firstPage < leftSiblingIndex) {
-      pageNumbers.push(firstPage);
-    }
-
-    // Add left ellipsis if needed
-    if (shouldShowLeftDots) {
-      pageNumbers.push(-1); // Using -1 to indicate ellipsis
-    }
-
-    // Add page numbers around current page
-    for (let i = leftSiblingIndex; i <= rightSiblingIndex; i++) {
-      pageNumbers.push(i);
-    }
-
-    // Add right ellipsis if needed
-    if (shouldShowRightDots) {
-      pageNumbers.push(-2); // Using -2 to indicate ellipsis (different key than left)
-    }
-
-    // Always add last page
-    if (lastPage > rightSiblingIndex) {
-      pageNumbers.push(lastPage);
-    }
-
-    return pageNumbers;
-  };
-
-  const pageNumbers = generatePagination();
+export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+  const pages = generatePagination(currentPage, totalPages);
 
   return (
-    <div className="flex items-center justify-center space-x-2">
-      {/* Previous page button */}
+    <div className="flex items-center justify-center space-x-2 mt-8">
       <Button
         variant="outline"
-        size="icon"
+        size="sm"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
         <ChevronLeft className="h-4 w-4" />
-        <span className="sr-only">Previous page</span>
       </Button>
 
-      {/* Page numbers */}
-      {pageNumbers.map((pageNumber, index) => {
-        // Render ellipsis
-        if (pageNumber < 0) {
+      <div className="flex space-x-1">
+        {pages.map((page, i) => {
+          if (page === '...') {
+            return (
+              <Button 
+                key={`ellipsis-${i}`} 
+                variant="outline" 
+                size="sm" 
+                disabled
+                className="cursor-default"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            );
+          }
+
+          const pageNumber = Number(page);
           return (
-            <Button 
-              key={pageNumber} 
-              variant="outline" 
-              size="icon" 
-              disabled
-              className="cursor-default"
+            <Button
+              key={pageNumber}
+              variant={currentPage === pageNumber ? 'primary' : 'outline'}
+              size="sm"
+              onClick={() => onPageChange(pageNumber)}
             >
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">More pages</span>
+              {pageNumber}
             </Button>
           );
-        }
+        })}
+      </div>
 
-        // Render page number
-        return (
-          <Button
-            key={pageNumber}
-            variant={pageNumber === currentPage ? "default" : "outline"}
-            onClick={() => onPageChange(pageNumber)}
-          >
-            {pageNumber}
-          </Button>
-        );
-      })}
-
-      {/* Next page button */}
       <Button
         variant="outline"
-        size="icon"
+        size="sm"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
         <ChevronRight className="h-4 w-4" />
-        <span className="sr-only">Next page</span>
       </Button>
     </div>
   );
 }
+
+function generatePagination(currentPage: number, totalPages: number): (string | number)[] {
+  // Logic to generate page numbers with ellipsis
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  if (currentPage <= 3) {
+    return [1, 2, 3, 4, '...', totalPages - 1, totalPages];
+  }
+
+  if (currentPage >= totalPages - 2) {
+    return [1, 2, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+} 

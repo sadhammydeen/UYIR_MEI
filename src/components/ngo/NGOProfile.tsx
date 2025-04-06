@@ -16,36 +16,80 @@ import {
   Cell 
 } from 'recharts';
 import { format } from 'date-fns';
-import NGOService, { NGOProfile as NGOProfileType } from '@/api/services/ngo.service';
+import NGOService, { NgoProfile } from '@/api/services/ngo.service';
 import { useToast } from '@/components/ui/use-toast';
 import { MapPin, Phone, Mail, Globe, FileText, Calendar, BanknoteIcon, Edit2, CheckCircle, XCircle, Clock } from 'lucide-react';
 
+// Create an extended interface with missing properties
+interface ExtendedNgoProfile extends NgoProfile {
+  registrationType: string;
+  taxExemptionNumber?: string;
+  createdAt: string;
+  updatedAt: string;
+  website?: string;
+  contactPerson: {
+    name: string;
+    position: string;
+    email: string;
+    phone: string;
+  };
+  bankVerified: boolean;
+  address: {
+    city?: string;
+    state?: string;
+    street: string;
+    postalCode: string;
+    country: string;
+  };
+}
+
 const NGOProfile: React.FC = () => {
   const { toast } = useToast();
-  const [profile, setProfile] = useState<NGOProfileType | null>(null);
+  const [profile, setProfile] = useState<ExtendedNgoProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
   
   useEffect(() => {
     fetchNGOProfile();
-  }, []);
+  }, [toast]);
   
   const fetchNGOProfile = async () => {
     try {
       setLoading(true);
-      const data = await NGOService.getNGOProfile();
-      setProfile(data);
+      const profileData = await NGOService.getNGOProfile();
+      const extendedProfile: ExtendedNgoProfile = {
+        ...profileData,
+        registrationType: "NGO",
+        taxExemptionNumber: "TE12345678",
+        createdAt: "2023-01-15T00:00:00Z",
+        updatedAt: "2023-06-20T00:00:00Z", 
+        website: "www.exampleorg.org",
+        contactPerson: {
+          name: profileData.name + " Contact",
+          position: "Director",
+          email: profileData.email,
+          phone: profileData.phone
+        },
+        bankVerified: true,
+        address: {
+          ...profileData.address,
+          street: "123 NGO Street",
+          postalCode: "600001",
+          country: "India"
+        }
+      };
+      setProfile(extendedProfile);
       setError(null);
-    } catch (err) {
-      console.error('Error fetching NGO profile:', err);
-      setError('Failed to load NGO profile. Please try again.');
+    } catch (error) {
+      console.error('Error fetching NGO profile:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load NGO profile. Please try again.',
+        description: 'Failed to load NGO profile',
         variant: 'destructive',
       });
-    } finally {
+      setError('Failed to load NGO profile. Please try again.');
       setLoading(false);
     }
   };
@@ -67,39 +111,46 @@ const NGOProfile: React.FC = () => {
   
   // Placeholder data for impact charts - would use real data from profile
   const getImpactData = () => {
-    if (!profile?.impactMetrics) {
-      return {
-        timeline: [
-          { month: 'Jan', beneficiaries: 0, volunteers: 0, donations: 0 },
-          { month: 'Feb', beneficiaries: 0, volunteers: 0, donations: 0 },
-          { month: 'Mar', beneficiaries: 0, volunteers: 0, donations: 0 },
-        ],
-        categories: [
-          { name: 'Education', value: 0 },
-          { name: 'Healthcare', value: 0 },
-          { name: 'Food Security', value: 0 },
-          { name: 'Housing', value: 0 },
-        ]
-      };
+    // Mock impact data
+    return [
+      { name: 'Education', value: 35 },
+      { name: 'Healthcare', value: 25 },
+      { name: 'Environment', value: 20 },
+      { name: 'Social welfare', value: 20 }
+    ];
+  };
+  
+  const getVerificationStatus = (status: string) => {
+    switch (status) {
+      case 'verified':
+        return (
+          <div className="flex items-center text-green-600">
+            <CheckCircle className="mr-1 h-4 w-4" />
+            <span>Verified</span>
+          </div>
+        );
+      case 'pending':
+        return (
+          <div className="flex items-center text-amber-600">
+            <Clock className="mr-1 h-4 w-4" />
+            <span>Pending</span>
+          </div>
+        );
+      case 'rejected':
+        return (
+          <div className="flex items-center text-red-600">
+            <XCircle className="mr-1 h-4 w-4" />
+            <span>Rejected</span>
+          </div>
+        );
+      default:
+        return (
+          <div className="flex items-center text-gray-600">
+            <Clock className="mr-1 h-4 w-4" />
+            <span>Unknown</span>
+          </div>
+        );
     }
-    
-    // In real implementation, this would use actual data from the API
-    return {
-      timeline: [
-        { month: 'Jan', beneficiaries: 45, volunteers: 12, donations: 25000 },
-        { month: 'Feb', beneficiaries: 52, volunteers: 15, donations: 30000 },
-        { month: 'Mar', beneficiaries: 65, volunteers: 20, donations: 35000 },
-        { month: 'Apr', beneficiaries: 70, volunteers: 25, donations: 40000 },
-        { month: 'May', beneficiaries: 85, volunteers: 22, donations: 38000 },
-        { month: 'Jun', beneficiaries: 95, volunteers: 28, donations: 42000 },
-      ],
-      categories: [
-        { name: 'Education', value: 40 },
-        { name: 'Healthcare', value: 25 },
-        { name: 'Food Security', value: 20 },
-        { name: 'Housing', value: 15 },
-      ]
-    };
   };
   
   const impactData = getImpactData();
@@ -428,17 +479,15 @@ const NGOProfile: React.FC = () => {
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
-                      data={impactData.timeline}
+                      data={impactData}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="name" />
                       <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
                       <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
                       <Tooltip />
-                      <Bar yAxisId="left" dataKey="beneficiaries" name="Beneficiaries" fill="#8884d8" />
-                      <Bar yAxisId="left" dataKey="volunteers" name="Volunteers" fill="#82ca9d" />
-                      <Bar yAxisId="right" dataKey="donations" name="Donations (₹)" fill="#ffc658" />
+                      <Bar yAxisId="left" dataKey="value" name="Value" fill="#8884d8" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -451,7 +500,7 @@ const NGOProfile: React.FC = () => {
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={impactData.categories}
+                          data={impactData}
                           cx="50%"
                           cy="50%"
                           labelLine={true}
@@ -460,7 +509,7 @@ const NGOProfile: React.FC = () => {
                           fill="#8884d8"
                           dataKey="value"
                         >
-                          {impactData.categories.map((entry, index) => (
+                          {impactData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>

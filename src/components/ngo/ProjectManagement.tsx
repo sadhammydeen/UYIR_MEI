@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { CalendarIcon, CheckCircleIcon, Clock2Icon, ListTodoIcon, UsersIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import NGOService, { CollaborationProject, NGOProfile } from '@/api/services/ngo.service';
+import NGOService, { CollaborationProject, NgoProfile } from '@/api/services/ngo.service';
 
 const ProjectManagement: React.FC = () => {
   const [projects, setProjects] = useState<CollaborationProject[]>([]);
@@ -18,7 +18,7 @@ const ProjectManagement: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<CollaborationProject | null>(null);
   const [isProjectDetailOpen, setIsProjectDetailOpen] = useState(false);
-  const [ngoProfiles, setNgoProfiles] = useState<Record<string, NGOProfile>>({});
+  const [ngoProfiles, setNgoProfiles] = useState<Record<string, NgoProfile>>({});
   const { toast } = useToast();
 
   // Fetch projects
@@ -32,7 +32,7 @@ const ProjectManagement: React.FC = () => {
         
         // Fetch NGO profiles for all participants
         const uniqueNgoIds = [...new Set(projectsData.flatMap(p => p.participants))];
-        const profiles: Record<string, NGOProfile> = {};
+        const profiles: Record<string, NgoProfile> = {};
         
         for (const id of uniqueNgoIds) {
           try {

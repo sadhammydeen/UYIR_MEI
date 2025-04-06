@@ -1,4 +1,5 @@
 import api from '../index';
+import { API_URL } from "@/config";
 
 export interface NGORegistrationData {
   name: string;
@@ -19,60 +20,54 @@ export interface NGORegistrationData {
   };
   contactPerson: {
     name: string;
-    position: string;
+    role: string;
     email: string;
     phone: string;
   };
   focusAreas: string[]; // e.g., 'Education', 'Healthcare', 'Poverty Alleviation'
   establishedYear: number;
   logo?: File;
-  bankDetails?: {
+  bankDetails: {
     accountName: string;
     accountNumber: string;
     bankName: string;
     branchName: string;
     ifscCode: string;
   };
+  organizationSize: string;
+  fundingSources: string[];
+  annualBudget?: number;
 }
 
-export interface NGOProfile {
+export interface NgoProfile {
   id: string;
   name: string;
+  description: string;
   email: string;
   phone: string;
-  website?: string;
-  description: string;
-  registrationNumber: string;
-  registrationType: string;
-  verificationStatus: 'pending' | 'verified' | 'rejected';
-  taxExemptionNumber?: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-  };
-  contactPerson: {
-    name: string;
-    position: string;
-    email: string;
-    phone: string;
-  };
-  focusAreas: string[];
-  establishedYear: number;
   logoUrl?: string;
-  bankVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-  rating?: number;
-  reviewCount?: number;
-  impactMetrics?: {
+  verificationStatus: 'verified' | 'pending' | 'rejected';
+  rating: number;
+  focusAreas: string[];
+  address?: {
+    city?: string;
+    state?: string;
+  };
+  size: 'small' | 'medium' | 'large';
+  registrationNumber: string;
+  establishedYear?: number;
+  impactMetrics: {
     beneficiariesServed: number;
     projectsCompleted: number;
-    volunteersEngaged: number;
-    donationsReceived: number;
+    successRate: number;
+    fundingUtilization: number;
+    volunteersEngaged?: number;
+    donationsReceived?: number;
   };
+  staff?: {
+    volunteers: number;
+  };
+  badges?: string[];
 }
 
 export interface CollaborationRequest {
@@ -124,57 +119,64 @@ export interface CollaborationProject {
 const NGOService = {
   // Registration and profile management
   registerNGO: async (ngoData: NGORegistrationData): Promise<{ success: boolean; applicationId: string }> => {
-    // For file uploads, use FormData
-    const formData = new FormData();
-    
-    // Handle nested objects and arrays
-    Object.entries(ngoData).forEach(([key, value]) => {
-      if (key === 'registrationDocument' || key === 'logo') {
-        formData.append(key, value as File);
-      } else if (typeof value === 'object' && value !== null && !(value instanceof File)) {
-        // Handle nested objects like address, contactPerson, bankDetails
-        if (Array.isArray(value)) {
-          // Handle arrays like focusAreas
-          value.forEach((item, index) => {
-            formData.append(`${key}[${index}]`, item);
-          });
-        } else {
-          // Handle objects
-          Object.entries(value).forEach(([nestedKey, nestedValue]) => {
-            formData.append(`${key}.${nestedKey}`, nestedValue as string);
-          });
+    try {
+      const formData = new FormData();
+      
+      // Append basic data
+      Object.entries(ngoData).forEach(([key, value]) => {
+        if (key !== 'registrationDocument' && key !== 'logo' && key !== 'address' && key !== 'bankDetails' && key !== 'contactPerson' && key !== 'focusAreas' && key !== 'fundingSources') {
+          formData.append(key, String(value));
         }
-      } else {
-        formData.append(key, value as string);
+      });
+      
+      // Append complex objects as JSON
+      formData.append('address', JSON.stringify(ngoData.address));
+      formData.append('bankDetails', JSON.stringify(ngoData.bankDetails));
+      formData.append('contactPerson', JSON.stringify(ngoData.contactPerson));
+      formData.append('focusAreas', JSON.stringify(ngoData.focusAreas));
+      formData.append('fundingSources', JSON.stringify(ngoData.fundingSources));
+      
+      // Append files
+      formData.append('registrationDocument', ngoData.registrationDocument);
+      if (ngoData.logo) {
+        formData.append('logo', ngoData.logo);
       }
-    });
-    
-    const { data } = await api.post('/ngos/register', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    
-    return data;
+      
+      const { data } = await api.post('/ngos/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      return data;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   },
 
-  getNGOProfile: async (): Promise<NGOProfile> => {
-    const { data } = await api.get('/ngos/profile');
-    return data;
+  getNGOProfile: async (): Promise<NgoProfile> => {
+    try {
+      const { data } = await api.get('/ngos/profile');
+      return data;
+    } catch (error) {
+      console.error('Get NGO profile error:', error);
+      throw error;
+    }
   },
 
-  updateNGOProfile: async (profileData: Partial<NGOProfile>): Promise<NGOProfile> => {
+  updateNGOProfile: async (profileData: Partial<NgoProfile>): Promise<NgoProfile> => {
     const { data } = await api.put('/ngos/profile', profileData);
     return data;
   },
 
   // NGO discovery and verification
-  getAllNGOs: async (filters?: Record<string, any>): Promise<NGOProfile[]> => {
+  getAllNGOs: async (filters?: Record<string, any>): Promise<NgoProfile[]> => {
     const { data } = await api.get('/ngos', { params: filters });
     return data;
   },
 
-  getNGOById: async (id: string): Promise<NGOProfile> => {
+  getNGOById: async (id: string): Promise<NgoProfile> => {
     const { data } = await api.get(`/ngos/${id}`);
     return data;
   },
@@ -236,6 +238,31 @@ const NGOService = {
     const { data } = await api.put(`/collaborations/projects/${projectId}/activities/${activityId}`, { status });
     return data;
   },
+
+  // Get top NGOs by impact
+  getTopNGOs: async (metric: string, limit: number) => {
+    try {
+      // Use the existing getAllNGOs method with proper filters
+      const allNgos = await NGOService.getAllNGOs();
+      
+      // Sort by the specified metric
+      const sorted = [...allNgos].sort((a, b) => {
+        if (metric === 'successRate') {
+          return b.impactMetrics.successRate - a.impactMetrics.successRate;
+        } else if (metric === 'fundingUtilization') {
+          return b.impactMetrics.fundingUtilization - a.impactMetrics.fundingUtilization;
+        } else {
+          return b.impactMetrics.beneficiariesServed - a.impactMetrics.beneficiariesServed;
+        }
+      });
+      
+      // Return top n results
+      return sorted.slice(0, limit);
+    } catch (error) {
+      console.error('Get top NGOs error:', error);
+      throw error;
+    }
+  }
 };
 
 export default NGOService; 

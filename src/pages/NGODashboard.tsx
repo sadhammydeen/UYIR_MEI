@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 
 import NGOService, { 
-  NGOProfile, 
+  NgoProfile,
   CollaborationRequest, 
   CollaborationProject 
 } from '@/api/services/ngo.service';
@@ -44,7 +44,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const NGODashboard: React.FC = () => {
   const { toast } = useToast();
-  const [profile, setProfile] = useState<NGOProfile | null>(null);
+  const [profile, setProfile] = useState<NgoProfile | null>(null);
   const [collaborationRequests, setCollaborationRequests] = useState<CollaborationRequest[]>([]);
   const [projects, setProjects] = useState<CollaborationProject[]>([]);
   const [loading, setLoading] = useState({

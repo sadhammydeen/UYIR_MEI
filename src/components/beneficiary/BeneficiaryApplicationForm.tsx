@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import Button from '@/components/ui/button.tsx';
+import Button from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -104,6 +104,9 @@ interface BeneficiaryApplicationFormProps {
   onSuccess?: () => void;
 }
 
+// Define the type for locationStatus
+type LocationStatus = 'detecting' | 'detected' | 'error' | 'pending';
+
 const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({ onSuccess }) => {
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
@@ -116,7 +119,7 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
   const [needDetails, setNeedDetails] = useState<any[]>([]);
   const [aadhaarVerificationStep, setAadhaarVerificationStep] = useState<'initial' | 'otp_sent' | 'verified' | 'failed'>('initial');
   const [aadhaarOtp, setAadhaarOtp] = useState('');
-  const [locationStatus, setLocationStatus] = useState<'detecting' | 'detected' | 'error' | 'pending'>('pending');
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>('pending');
   
   const { 
     register, 
@@ -317,11 +320,16 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
     }, 1500);
   };
   
-  // Get user location
+  // Update the detectLocation function with a simple string equality check
   const detectLocation = () => {
-    setLocationStatus('detecting');
+    // Simply compare as string to avoid type issues
+    const status = String(locationStatus);
+    if (status === 'detecting') {
+      return; // Already detecting
+    }
     
-    if (navigator.geolocation) {
+    setLocationStatus('detecting');
+    if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setValue('location', {
@@ -332,7 +340,7 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
           setLocationStatus('detected');
           toast({
             title: "Location Detected",
-            description: "Your location has been successfully captured"
+            description: "Your coordinates have been captured successfully.",
           });
         },
         (error) => {
@@ -354,6 +362,9 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
       });
     }
   };
+  
+  // Get supportRequested value for use in the form
+  const supportTypes = watch('supportRequested') || [];
   
   const onSubmit = async (data: ApplicationFormValues) => {
     setIsSubmitting(true);
@@ -669,25 +680,32 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Your Current Location</span>
                   
-                  {locationStatus === 'pending' || locationStatus === 'error' ? (
-                    <Button 
-                      type="button" 
-                      onClick={detectLocation}
-                      className="bg-theuyir-pink hover:bg-theuyir-pink/90 text-white"
-                      size="sm"
-                    >
-                      {locationStatus === 'detecting' ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Detecting...
-                        </>
-                      ) : 'Detect Location'}
-                    </Button>
+                  {locationStatus !== 'pending' && locationStatus !== 'error' && locationStatus !== 'detected' ? (
+                    <div className="inline-flex items-center">
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      <span className="text-xs text-gray-600">Detecting location...</span>
+                    </div>
                   ) : locationStatus === 'detected' ? (
-                    <span className="text-green-600 text-sm flex items-center">
-                      <CheckCircle size={16} className="mr-1" /> Location detected
-                    </span>
-                  ) : null}
+                    <div className="inline-flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-xs text-gray-600">Location detected</span>
+                    </div>
+                  ) : locationStatus === 'error' ? (
+                    <div className="inline-flex items-center">
+                      <AlertCircle className="h-4 w-4 text-red-600 mr-2" />
+                      <span className="text-xs text-gray-600">Failed to detect location</span>
+                    </div>
+                  ) : (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={detectLocation}
+                      className="text-xs h-8"
+                    >
+                      Detect My Location
+                    </Button>
+                  )}
                 </div>
                 
                 {locationStatus === 'detected' && (
@@ -731,17 +749,36 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
                 <Label>What type of assistance do you need? <span className="text-red-500">*</span></Label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   <CheckboxGroup
-                    value={watchedNeeds || []}
+                    value={watchedNeeds}
                     onValueChange={handleNeedsChange}
                   >
-                    {needsOptions.map((option) => (
-                      <div key={option.id} className="flex items-center space-x-2">
-                        <Checkbox id={option.id} value={option.id} />
-                        <Label htmlFor={option.id} className="text-sm font-normal">
-                          {option.label}
-                        </Label>
-                      </div>
-                    ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {needsOptions.map((option) => (
+                        <div key={option.id} className="flex items-start space-x-3 p-3 bg-white border rounded-md">
+                          <Checkbox
+                            id={`need-${option.id}`}
+                            value={option.id}
+                            checked={watchedNeeds.includes(option.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                handleNeedsChange([...watchedNeeds, option.id]);
+                              } else {
+                                handleNeedsChange(watchedNeeds.filter(id => id !== option.id));
+                              }
+                            }}
+                          />
+                          <div>
+                            <Label htmlFor={`need-${option.id}`} className="font-medium">
+                              {option.label}
+                            </Label>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {option.category === 'basic' ? 'Basic Need' : 
+                                option.category === 'development' ? 'Development Need' : 'Wellbeing Need'}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </CheckboxGroup>
                 </div>
                 {errors.needs && (
@@ -860,14 +897,11 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
                         {availableNGOs.map((ngo) => (
                           <div key={ngo.id} className="flex items-center space-x-2">
                             <Checkbox 
-                              id={`ngo-${ngo.id}`} 
+                              id={ngo.id} 
                               value={ngo.id}
-                              disabled={
-                                (watch('preferredNGOs')?.length || 0) >= 3 && 
-                                !(watch('preferredNGOs') || []).includes(ngo.id)
-                              }
+                              checked={(watch('preferredNGOs') || []).includes(ngo.id)}
                             />
-                            <Label htmlFor={`ngo-${ngo.id}`} className="text-sm font-normal">
+                            <Label htmlFor={ngo.id} className="text-sm font-normal">
                               {ngo.name}
                               <span className="text-xs text-gray-500 block">
                                 Focus: {ngo.focusAreas.map(area => {

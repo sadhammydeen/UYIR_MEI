@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Button from '@/components/ui/button.tsx';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import Button from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { useToast } from '@/components/ui/use-toast';
+import NGOService, { NGORegistrationData } from '@/api/services/ngo.service';
 import {
   Form,
   FormControl,
@@ -13,10 +18,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import NGOService, { NGORegistrationData } from '@/api/services/ngo.service';
-import { useToast } from '@/components/ui/use-toast';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Registration schema for validation
 const registrationSchema = z.object({
@@ -64,6 +65,41 @@ const registrationSchema = z.object({
 });
 
 type RegistrationInput = z.infer<typeof registrationSchema>;
+
+// Define a type that matches the form data structure
+interface RegistrationFormData {
+  name: string;
+  email: string;
+  phone: string;
+  website?: string;
+  description: string;
+  registrationNumber: string;
+  registrationType: string;
+  taxExemptionNumber?: string;
+  address: {
+    street?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+  };
+  representativeName?: string;
+  representativeRole?: string;
+  focusAreas: string[];
+  size?: string;
+  fundingDetails?: {
+    sources?: string[];
+    annualBudget?: number;
+  };
+  bankDetails?: {
+    accountName?: string;
+    accountNumber?: string;
+    bankName?: string;
+    branchName?: string;
+    ifscCode?: string;
+  };
+  termsAccepted: boolean;
+}
 
 const NGORegistrationForm: React.FC = () => {
   const { toast } = useToast();
@@ -169,11 +205,11 @@ const NGORegistrationForm: React.FC = () => {
     setCurrentStep(prev => prev - 1);
   };
 
-  const onSubmit = async (data: RegistrationInput) => {
+  const onSubmit = async (data: RegistrationFormData) => {
     if (!registrationDocument) {
       toast({
-        title: "Registration document required",
-        description: "Please upload your registration document",
+        title: "Missing Document",
+        description: "Please upload your organization's registration document",
         variant: "destructive",
       });
       return;
@@ -184,9 +220,41 @@ const NGORegistrationForm: React.FC = () => {
       
       // Prepare the full registration data
       const ngoData: NGORegistrationData = {
-        ...data,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        website: data.website || undefined,
+        description: data.description,
+        registrationNumber: data.registrationNumber,
+        registrationType: data.registrationType,
+        taxExemptionNumber: data.taxExemptionNumber || undefined,
+        establishedYear: new Date().getFullYear(), // Using current year as a fallback
+        address: {
+          street: data.address?.street || '',
+          city: data.address?.city || '',
+          state: data.address?.state || '',
+          postalCode: data.address?.postalCode || '',
+          country: data.address?.country || 'India'
+        },
+        contactPerson: {
+          name: data.representativeName || data.name,
+          role: data.representativeRole || 'Representative',
+          phone: data.phone,
+          email: data.email
+        },
+        focusAreas: data.focusAreas,
+        organizationSize: data.size || 'small',
+        fundingSources: data.fundingDetails?.sources || [],
+        annualBudget: data.fundingDetails?.annualBudget,
+        bankDetails: {
+          accountName: data.bankDetails?.accountName || '',
+          accountNumber: data.bankDetails?.accountNumber || '',
+          bankName: data.bankDetails?.bankName || '',
+          branchName: data.bankDetails?.branchName || '',
+          ifscCode: data.bankDetails?.ifscCode || ''
+        },
         registrationDocument: registrationDocument,
-        logo: logo || undefined,
+        logo: logo || undefined
       };
       
       const response = await NGOService.registerNGO(ngoData);
@@ -314,14 +382,19 @@ const NGORegistrationForm: React.FC = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Registration Type*</FormLabel>
-                  <FormControl>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      options={registrationTypeOptions}
-                      placeholder="Select registration type"
-                    />
-                  </FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select registration type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {registrationTypeOptions.map(option => (
+                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import Button from '@/components/ui/button.tsx';
+import { CreditCard, Wallet, Gift, ShieldCheck, CalendarClock, Heart } from 'lucide-react';
+import Button from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ArrowRight, ShieldCheck, CreditCard, Wallet, Loader2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import PaymentMethodLogos from '@/components/shared/PaymentMethodLogos';
 import DonationService from '@/api/services/donation.service';
+import PaymentMethodLogos from '@/components/shared/PaymentMethodLogos';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface DonationCheckoutProps {
@@ -186,6 +186,8 @@ const DonationCheckout: React.FC<DonationCheckoutProps> = ({
     setIsProcessing(true);
     
     try {
+      const dedicationType = formData.dedicationType as "inHonor" | "inMemory" | undefined;
+
       const donationData = {
         amount,
         currency: 'INR',
@@ -193,7 +195,7 @@ const DonationCheckout: React.FC<DonationCheckoutProps> = ({
         campaign: formData.campaign || undefined,
         paymentMethod: formData.paymentMethod,
         anonymous: formData.anonymous,
-        dedicationType: formData.dedicationType || undefined,
+        dedicationType: dedicationType,
         dedicatedTo: formData.dedicatedTo || undefined,
         notes: formData.notes || undefined
       };
@@ -513,13 +515,12 @@ const DonationCheckout: React.FC<DonationCheckoutProps> = ({
         
         {step < 3 ? (
           <Button onClick={nextStep} disabled={isProcessing}>
-            Continue <ArrowRight size={16} className="ml-1" />
+            Continue
           </Button>
         ) : (
           <Button onClick={processDonation} disabled={isProcessing}>
             {isProcessing ? (
               <>
-                <Loader2 size={16} className="mr-2 animate-spin" />
                 Processing...
               </>
             ) : (

@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useFirestoreQuery } from '@/hooks/useFirestoreQuery';
 import { VirtualizedList } from '@/components/ui/virtualized-list';
-import { NgoProfile } from '@/lib/ngo';
 import { Card } from '@/components/ui/card';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Badge } from '@/components/ui/badge';
@@ -12,8 +11,27 @@ import { useSidebar } from '@/store';
 import Link from 'next/link';
 import { Sparkles, MapPin, ExternalLink, Award, Search, Users } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import debounce from 'lodash.debounce';
+import Button from '@/components/ui/button';
+import NGOService from '@/api/services/ngo.service';
+
+interface NgoProfile {
+  id: string;
+  name: string;
+  description: string;
+  logoUrl?: string;
+  address?: {
+    city?: string;
+    state?: string;
+  };
+  focusAreas: string[];
+  metrics?: {
+    beneficiariesHelped?: number;
+  };
+  rating?: number;
+  verificationStatus?: string;
+}
 
 interface OptimizedNgoListProps {
   initialLimit?: number;
@@ -168,31 +186,33 @@ export function OptimizedNgoList({
               />
             </div>
             
-            <Select
-              value={categoryFilter}
-              onValueChange={setCategoryFilter}
-              className="w-full sm:w-48"
-            >
-              <option value="all">All Categories</option>
-              <option value="Education">Education</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Environment">Environment</option>
-              <option value="Women Empowerment">Women Empowerment</option>
-              <option value="Child Welfare">Child Welfare</option>
-              <option value="Rural Development">Rural Development</option>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filter by category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="Education">Education</SelectItem>
+                <SelectItem value="Healthcare">Healthcare</SelectItem>
+                <SelectItem value="Environment">Environment</SelectItem>
+                <SelectItem value="Women Empowerment">Women Empowerment</SelectItem>
+                <SelectItem value="Child Welfare">Child Welfare</SelectItem>
+                <SelectItem value="Rural Development">Rural Development</SelectItem>
+              </SelectContent>
             </Select>
             
-            <Select
-              value={regionFilter}
-              onValueChange={setRegionFilter}
-              className="w-full sm:w-48"
-            >
-              <option value="all">All Regions</option>
-              <option value="Tamil Nadu">Tamil Nadu</option>
-              <option value="Kerala">Kerala</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Andhra Pradesh">Andhra Pradesh</option>
-              <option value="Telangana">Telangana</option>
+            <Select value={regionFilter} onValueChange={setRegionFilter}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filter by region" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Regions</SelectItem>
+                <SelectItem value="Tamil Nadu">Tamil Nadu</SelectItem>
+                <SelectItem value="Kerala">Kerala</SelectItem>
+                <SelectItem value="Karnataka">Karnataka</SelectItem>
+                <SelectItem value="Andhra Pradesh">Andhra Pradesh</SelectItem>
+                <SelectItem value="Telangana">Telangana</SelectItem>
+              </SelectContent>
             </Select>
           </div>
         </div>
