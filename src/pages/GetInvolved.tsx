@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import Header from '@/components/layout/Header';
 
 const GetInvolved = () => {
   const [activeTab, setActiveTab] = useState('volunteer');
@@ -38,30 +39,13 @@ const GetInvolved = () => {
   return (
     <div className="flex flex-col">
       <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="relative py-20 bg-theuyir-darkgrey text-white overflow-hidden">
-          <div className="absolute inset-0 -z-10 opacity-20">
-            <img
-              src="/images/backgrounds/page-header-bg.png"
-              alt="Background"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-3xl mx-auto text-center fade-in-section opacity-0">
-              <p className="inline-block bg-theuyir-yellow/20 text-theuyir-yellow px-4 py-1 rounded-full text-sm font-medium mb-4">
-                GET INVOLVED
-              </p>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Make a <span className="yellow-highlight">Difference</span> Today
-              </h1>
-              <p className="text-white/80 text-lg mb-8">
-                Join our community of change-makers and help create a positive impact in the lives of those who need it most.
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* Header with 3D effects */}
+        <Header 
+          title="Make a Difference Today"
+          description="Join our community of change-makers and help create a positive impact in the lives of those who need it most."
+          badge="GET INVOLVED"
+          backgroundImage="/images/backgrounds/page-header-bg.png"
+        />
         
         {/* Tabs Section */}
         <section className="py-12 bg-white border-b border-gray-200">

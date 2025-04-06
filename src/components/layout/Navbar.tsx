@@ -103,7 +103,6 @@ const Navbar = () => {
               { path: '/services', label: 'WHAT WE DO' },
               { path: '/get-involved', label: 'GET INVOLVED' },
               { path: '/give', label: 'WAYS TO GIVE' },
-              { path: '/needs-donate', label: 'DONATE TO NEEDS' },
               { path: '/impact-tracker', label: 'IMPACT' },
               { path: '/stories', label: 'STORIES' }
             ].map(({ path, label }) => (
@@ -258,7 +257,6 @@ const Navbar = () => {
             { path: '/services', label: 'What We Do' },
             { path: '/get-involved', label: 'Get Involved' },
             { path: '/give', label: 'Ways to Give' },
-            { path: '/needs-donate', label: 'Donate to Needs' },
             { path: '/impact-tracker', label: 'Impact' },
             { path: '/stories', label: 'Stories' }
           ].map(({ path, label }) => (

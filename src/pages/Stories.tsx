@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Search, Tag, Calendar, User, Heart, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
 import Button from '@/components/ui/button';
+import Header from '@/components/layout/Header';
 
 const StoryCard = ({ 
   image, 
@@ -106,41 +107,13 @@ const Stories = () => {
   return (
     <div className="flex flex-col">
       <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="relative py-20 bg-theuyir-darkgrey text-white overflow-hidden">
-          <div className="absolute inset-0 -z-10 opacity-20">
-            <img
-              src="/images/backgrounds/page-header-bg.png"
-              alt="Background"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-3xl mx-auto text-center fade-in-section opacity-0">
-              <p className="inline-block bg-theuyir-yellow/20 text-theuyir-yellow px-4 py-1 rounded-full text-sm font-medium mb-4">
-                IMPACT STORIES
-              </p>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Stories of <span className="yellow-highlight">Transformation</span>
-              </h1>
-              <p className="text-white/80 text-lg mb-8">
-                Discover stories of resilience, hope, and positive change made possible through the collective efforts of our community.
-              </p>
-              
-              <div className="relative max-w-xl mx-auto">
-                <input
-                  type="text"
-                  placeholder="Search stories..."
-                  className="w-full py-3 pl-5 pr-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theuyir-yellow"
-                />
-                <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-theuyir-yellow transition-colors">
-                  <Search size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Header with 3D effects */}
+        <Header 
+          title="Stories of Transformation"
+          description="Discover stories of resilience, hope, and positive change made possible through the collective efforts of our community."
+          badge="IMPACT STORIES"
+          backgroundImage="/images/backgrounds/page-header-bg.png"
+        />
         
         {/* Categories Filter */}
         <section className="py-8 bg-white border-b border-gray-200">

@@ -186,3 +186,124 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Add these global 3D effect styles */
+.page-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(#ffffff 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.floating-element {
+  animation: float 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.floating-element-slow {
+  animation: float 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.floating-element-fast {
+  animation: float 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(5px);
+  }
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #f0b429, #ef4444, #f0b429);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: shine 4s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.text-shadow-3d {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.text-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background-color: rgba(240, 180, 41, 0.4);
+  border-radius: 4px;
+  transform: skew(-6deg) translateZ(-5px);
+  z-index: -1;
+  box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.3);
+}
+
+.shadow-3d {
+  box-shadow: 
+    0 10px 15px -3px rgba(0,0,0,0.1),
+    0 4px 6px -2px rgba(0,0,0,0.05),
+    0 -2px 5px rgba(255,255,255,0.05) inset;
+}
+
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(circle at center, rgba(239, 68, 68, 0.15) 0%, transparent 70%);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.glow-effect:hover::before {
+  opacity: 1;
+}

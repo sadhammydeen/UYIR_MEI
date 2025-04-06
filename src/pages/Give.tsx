@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { 
   ArrowRight, Heart, CreditCard, Wallet, 
-  DollarSign, Calendar, Gift, ShieldCheck, Clock, Repeat 
+  DollarSign, Calendar, Gift, ShieldCheck, Clock, Repeat, Target, User, Users, Check, ChevronDown, Info 
 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -16,6 +16,7 @@ import DonationCheckout from '@/components/donations/DonationCheckout';
 import DonationService from '@/api/services/donation.service';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLoading } from '@/contexts/LoadingContext';
+import Header from '@/components/layout/Header';
 
 const Give = () => {
   const { isAuthenticated } = useAuth();
@@ -109,31 +110,13 @@ const Give = () => {
   return (
     <div className="flex flex-col">
       <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="relative py-20 bg-theuyir-darkgrey text-white overflow-hidden">
-          <div className="absolute inset-0 -z-10 opacity-20">
-            <img
-              src="/images/backgrounds/page-header-bg.png"
-              alt="Background"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-3xl mx-auto text-center fade-in-section opacity-0">
-              <p className="inline-block bg-theuyir-yellow/20 text-theuyir-yellow px-4 py-1 rounded-full text-sm font-medium mb-4">
-                WAYS TO GIVE
-              </p>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Your <span className="yellow-highlight">Generosity</span> Changes Lives
-              </h1>
-              <p className="text-white/80 text-lg mb-8">
-                Every contribution, no matter the size, makes a meaningful difference in the lives of those we serve. 
-                Choose how you'd like to give today.
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* Header with 3D effects */}
+        <Header 
+          title="Ways to Give"
+          description="Your generosity can transform lives. Every contribution, no matter the size, makes a meaningful difference in our communities."
+          badge="DONATE"
+          backgroundImage="/images/backgrounds/page-header-bg.png"
+        />
         
         {/* Donation Success Message */}
         {donationSuccess && (

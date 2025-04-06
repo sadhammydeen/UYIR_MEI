@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { useLoading } from '@/contexts/LoadingContext';
 import { useToast } from '@/components/ui/use-toast';
 import DonationService, { DonationNeed } from '@/api/services/donation.service';
+import Header from '@/components/layout/Header';
 import { 
   BarChart, 
   Bar, 
@@ -34,6 +35,7 @@ import {
   Cell,
   Legend
 } from 'recharts';
+import { Link } from 'react-router-dom';
 
 // Success stories data for development
 const DUMMY_SUCCESS_STORIES = [
@@ -94,10 +96,18 @@ const ImpactTracker = () => {
   const { setIsLoading } = useLoading();
   const { toast } = useToast();
   
-  const [donationStats, setDonationStats] = useState<any>(null);
+  const [donationStats, setDonationStats] = useState<any>({
+    totalDonations: 2575000,
+    totalDonors: 3842,
+    totalBeneficiaries: 12568,
+    completedProjects: 187,
+    ongoingProjects: 42
+  });
   const [completedNeeds, setCompletedNeeds] = useState<DonationNeed[]>([]);
-  const [successStories, setSuccessStories] = useState<any[]>(DUMMY_SUCCESS_STORIES); // Use dummy data for development
+  const [successStories, setSuccessStories] = useState<any[]>(DUMMY_SUCCESS_STORIES);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [impactLocation, setImpactLocation] = useState('all');
   
   useEffect(() => {
     fetchImpactData();
@@ -108,16 +118,19 @@ const ImpactTracker = () => {
     try {
       setIsLoading(true);
       
-      // Fetch donation statistics
-      const stats = await DonationService.getDonationStats();
-      setDonationStats(stats);
-      
-      // In a real implementation, fetch completed needs with impact data
-      // For now, we'll use dummy data
-      // const needs = await DonationService.getActiveNeeds({ status: 'fulfilled' });
-      // setCompletedNeeds(needs);
-      
-      setLoading(false);
+      // Simulating API call with timeout
+      setTimeout(() => {
+        // In a real app, this would be from your backend
+        setDonationStats({
+          totalDonations: 2575000,
+          totalDonors: 3842,
+          totalBeneficiaries: 12568,
+          completedProjects: 187,
+          ongoingProjects: 42
+        });
+        
+        setLoading(false);
+      }, 800);
     } catch (error) {
       console.error('Error fetching impact data:', error);
       toast({
@@ -128,6 +141,21 @@ const ImpactTracker = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const filterStories = (category: string) => {
+    setActiveFilter(category);
+    // In a real app, you would fetch filtered data from the API
+    if (category === 'all') {
+      setSuccessStories(DUMMY_SUCCESS_STORIES);
+    } else {
+      setSuccessStories(DUMMY_SUCCESS_STORIES.filter(story => story.category === category));
+    }
+  };
+
+  const filterByLocation = (location: string) => {
+    setImpactLocation(location);
+    // In a real app, this would trigger an API call with the location filter
   };
   
   // Create chart data based on success stories categories
@@ -161,30 +189,13 @@ const ImpactTracker = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="relative py-20 bg-theuyir-darkgrey text-white overflow-hidden">
-          <div className="absolute inset-0 -z-10 opacity-20">
-            <img
-              src="/images/backgrounds/page-header-bg.png"
-              alt="Background"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-3xl mx-auto text-center">
-              <p className="inline-block bg-theuyir-yellow/20 text-theuyir-yellow px-4 py-1 rounded-full text-sm font-medium mb-4">
-                MEASURING IMPACT
-              </p>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Your Donations <span className="yellow-highlight">Make a Difference</span>
-              </h1>
-              <p className="text-white/80 text-lg mb-8">
-                See the real impact of your generosity. Every contribution transforms lives and creates lasting change in communities.
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* Header with 3D effects */}
+        <Header 
+          title="Impact Tracker"
+          description="Track the real-world impact of your contributions and see how our collective efforts are making a difference in communities."
+          badge="IMPACT METRICS"
+          backgroundImage="/images/backgrounds/page-header-bg.png"
+        />
         
         {/* Impact Overview */}
         <section className="py-12 bg-white">
@@ -198,45 +209,115 @@ const ImpactTracker = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              <Card className="text-center bg-blue-50 border-blue-100">
-                <CardContent className="pt-6">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Card className="text-center">
+                <CardHeader className="pb-2">
+                  <div className="mx-auto bg-blue-100 p-2 rounded-full w-12 h-12 flex items-center justify-center mb-2">
                     <Heart className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h3 className="text-3xl font-bold text-theuyir-darkgrey">₹{loading ? '...' : donationStats?.totalDonated?.toLocaleString() || '15,425,000'}</h3>
-                  <p className="text-gray-600 mt-1">Total Donations</p>
+                  <CardTitle className="text-2xl sm:text-3xl font-bold text-theuyir-darkgrey">
+                    {loading ? <Skeleton className="h-8 w-24 mx-auto" /> : (
+                      <>₹{(donationStats.totalDonations / 100000).toFixed(1)}L</>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 text-sm">Total Donations</p>
                 </CardContent>
+                <CardFooter className="pt-0 flex justify-center">
+                  <Link to="/give">
+                    <Button variant="link" size="sm" className="text-theuyir-pink">
+                      Donate Now <ArrowRight className="ml-1 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardFooter>
               </Card>
               
-              <Card className="text-center bg-green-50 border-green-100">
-                <CardContent className="pt-6">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Check className="h-6 w-6 text-green-600" />
+              <Card className="text-center">
+                <CardHeader className="pb-2">
+                  <div className="mx-auto bg-green-100 p-2 rounded-full w-12 h-12 flex items-center justify-center mb-2">
+                    <Users className="h-6 w-6 text-green-600" />
                   </div>
-                  <h3 className="text-3xl font-bold text-theuyir-darkgrey">{loading ? '...' : donationStats?.needsServed || '547'}</h3>
-                  <p className="text-gray-600 mt-1">Needs Fulfilled</p>
+                  <CardTitle className="text-2xl sm:text-3xl font-bold text-theuyir-darkgrey">
+                    {loading ? <Skeleton className="h-8 w-24 mx-auto" /> : (
+                      <>{donationStats.totalBeneficiaries.toLocaleString()}</>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 text-sm">People Helped</p>
                 </CardContent>
+                <CardFooter className="pt-0 flex justify-center">
+                  <Link to="/stories">
+                    <Button variant="link" size="sm" className="text-theuyir-pink">
+                      Read Stories <ArrowRight className="ml-1 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardFooter>
               </Card>
+            </div>
+            
+            <div className="mb-8">
+              <div className="flex flex-wrap gap-3 justify-center mb-6">
+                <Button 
+                  variant={activeFilter === 'all' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => filterStories('all')}
+                >
+                  All Categories
+                </Button>
+                <Button 
+                  variant={activeFilter === 'education' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => filterStories('education')}
+                >
+                  <BookOpen className="h-4 w-4 mr-1" /> Education
+                </Button>
+                <Button 
+                  variant={activeFilter === 'healthcare' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => filterStories('healthcare')}
+                >
+                  <Activity className="h-4 w-4 mr-1" /> Healthcare
+                </Button>
+                <Button 
+                  variant={activeFilter === 'food' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => filterStories('food')}
+                >
+                  <Heart className="h-4 w-4 mr-1" /> Food & Water
+                </Button>
+              </div>
               
-              <Card className="text-center bg-amber-50 border-amber-100">
-                <CardContent className="pt-6">
-                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="h-6 w-6 text-amber-600" />
-                  </div>
-                  <h3 className="text-3xl font-bold text-theuyir-darkgrey">{loading ? '...' : donationStats?.beneficiariesImpacted || '12,548'}</h3>
-                  <p className="text-gray-600 mt-1">Beneficiaries Impacted</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="text-center bg-purple-50 border-purple-100">
-                <CardContent className="pt-6">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Map className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <h3 className="text-3xl font-bold text-theuyir-darkgrey">{loading ? '...' : '36'}</h3>
-                  <p className="text-gray-600 mt-1">Districts Reached</p>
-                </CardContent>
-              </Card>
+              <div className="flex flex-wrap gap-3 justify-center">
+                <Button 
+                  variant={impactLocation === 'all' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => filterByLocation('all')}
+                >
+                  All Locations
+                </Button>
+                <Button 
+                  variant={impactLocation === 'tamil-nadu' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => filterByLocation('tamil-nadu')}
+                >
+                  Tamil Nadu
+                </Button>
+                <Button 
+                  variant={impactLocation === 'kerala' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => filterByLocation('kerala')}
+                >
+                  Kerala
+                </Button>
+                <Button 
+                  variant={impactLocation === 'karnataka' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => filterByLocation('karnataka')}
+                >
+                  Karnataka
+                </Button>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
