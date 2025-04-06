@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,14 +17,15 @@ import BeneficiaryService from '@/api/services/beneficiary.service';
 import { useAuth } from '@/contexts/AuthContext';
 
 const needsOptions = [
-  { id: 'food', label: 'Food Assistance' },
-  { id: 'education', label: 'Education Support' },
-  { id: 'healthcare', label: 'Healthcare Services' },
-  { id: 'housing', label: 'Housing Support' },
-  { id: 'vocational', label: 'Vocational Training' },
-  { id: 'financial', label: 'Financial Aid' },
-  { id: 'counseling', label: 'Counseling Services' },
-  { id: 'childcare', label: 'Childcare Support' }
+  { id: 'food', label: 'Food Assistance', category: 'basic', urgencyLevels: true },
+  { id: 'education', label: 'Education Support', category: 'development', urgencyLevels: true },
+  { id: 'healthcare', label: 'Healthcare Services', category: 'basic', urgencyLevels: true },
+  { id: 'housing', label: 'Housing Support', category: 'basic', urgencyLevels: true },
+  { id: 'vocational', label: 'Vocational Training', category: 'development', urgencyLevels: false },
+  { id: 'financial', label: 'Financial Aid', category: 'basic', urgencyLevels: true },
+  { id: 'counseling', label: 'Counseling Services', category: 'wellbeing', urgencyLevels: false },
+  { id: 'childcare', label: 'Childcare Support', category: 'wellbeing', urgencyLevels: false },
+  { id: 'employment', label: 'Employment Assistance', category: 'development', urgencyLevels: false }
 ];
 
 const supportOptions = [
@@ -49,6 +50,19 @@ const incomeLevels = [
   { value: "above2L", label: "Above ₹2,00,000 per year" }
 ];
 
+const urgencyLevels = [
+  { value: 'critical', label: 'Critical - Need immediate assistance (within 24-48 hours)' },
+  { value: 'high', label: 'High - Need assistance within 1 week' },
+  { value: 'medium', label: 'Medium - Need assistance within 2-4 weeks' },
+  { value: 'low', label: 'Low - Need is not time-sensitive' }
+];
+
+const ngoMatchingPreferences = [
+  { value: 'automatic', label: 'Automatic Matching (system will find the best NGO based on your needs)' },
+  { value: 'preferred', label: 'Preferred NGOs (select from a list)' },
+  { value: 'recommended', label: 'Recommended NGO (if someone referred you to a specific NGO)' }
+];
+
 const applicationSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
@@ -57,11 +71,27 @@ const applicationSchema = z.object({
   city: z.string().min(2, "City must be at least 2 characters"),
   state: z.string().min(2, "State must be at least 2 characters"),
   postalCode: z.string().regex(/^\d{6}$/, "Postal code must be 6 digits"),
+  location: z.object({
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+    accuracy: z.number().optional()
+  }).optional(),
+  aadhaarNumber: z.string().regex(/^\d{12}$/, "Aadhaar number must be 12 digits"),
+  aadhaarVerified: z.boolean().optional(),
   familySize: z.number().min(1, "Family size must be at least 1").max(20, "Family size cannot exceed 20"),
   incomeLevel: z.string().min(1, "Please select an income level"),
   needs: z.array(z.string()).min(1, "Please select at least one need"),
+  needDetails: z.array(z.object({
+    needType: z.string(),
+    urgencyLevel: z.string().optional(),
+    description: z.string().optional(),
+    estimatedCost: z.number().optional(),
+  })).optional(),
   currentSituation: z.string().min(20, "Please provide more details about your current situation"),
   supportRequested: z.array(z.string()).min(1, "Please select at least one type of support"),
+  ngoPreference: z.string().min(1, "Please select an NGO matching preference"),
+  preferredNGOs: z.array(z.string()).optional(),
+  referredNGO: z.string().optional(),
   referredBy: z.string().optional(),
   termsAccepted: z.boolean().refine(val => val === true, {
     message: "You must accept the terms and conditions"
@@ -80,7 +110,13 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 3;
+  const totalSteps = 4;
+  const [availableNGOs, setAvailableNGOs] = useState<{id: string, name: string, focusAreas: string[]}[]>([]);
+  const [ngoMatchingType, setNgoMatchingType] = useState('automatic');
+  const [needDetails, setNeedDetails] = useState<any[]>([]);
+  const [aadhaarVerificationStep, setAadhaarVerificationStep] = useState<'initial' | 'otp_sent' | 'verified' | 'failed'>('initial');
+  const [aadhaarOtp, setAadhaarOtp] = useState('');
+  const [locationStatus, setLocationStatus] = useState<'detecting' | 'detected' | 'error' | 'pending'>('pending');
   
   const { 
     register, 
@@ -88,6 +124,7 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
     setValue, 
     control,
     watch,
+    getValues,
     formState: { errors } 
   } = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
@@ -99,15 +136,80 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
       city: '',
       state: '',
       postalCode: '',
+      aadhaarNumber: '',
+      aadhaarVerified: false,
       familySize: 1,
       incomeLevel: '',
       needs: [],
+      needDetails: [],
       currentSituation: '',
       supportRequested: [],
+      ngoPreference: 'automatic',
+      preferredNGOs: [],
+      referredNGO: '',
       referredBy: '',
       termsAccepted: false
     }
   });
+  
+  const watchedNeeds = watch('needs');
+  const watchedNgoPreference = watch('ngoPreference');
+  
+  // Fetch available NGOs
+  useEffect(() => {
+    const fetchNGOs = async () => {
+      try {
+        // In real implementation, this would fetch from the API
+        // For now, simulating with sample data
+        setTimeout(() => {
+          setAvailableNGOs([
+            { id: 'ngo1', name: 'Helping Hands Trust', focusAreas: ['food', 'housing'] },
+            { id: 'ngo2', name: 'Education First Foundation', focusAreas: ['education', 'vocational'] },
+            { id: 'ngo3', name: 'Healthcare for All', focusAreas: ['healthcare', 'counseling'] },
+            { id: 'ngo4', name: 'New Life Support', focusAreas: ['financial', 'employment'] },
+            { id: 'ngo5', name: 'Child Care Initiative', focusAreas: ['childcare', 'education'] },
+          ]);
+        }, 1000);
+      } catch (error) {
+        console.error('Error fetching NGOs:', error);
+      }
+    };
+    
+    fetchNGOs();
+  }, []);
+  
+  // Update need details when needs change
+  useEffect(() => {
+    if (watchedNeeds && watchedNeeds.length > 0) {
+      // Keep existing details for needs that are still selected
+      const updatedDetails = needDetails.filter(detail => 
+        watchedNeeds.includes(detail.needType)
+      );
+      
+      // Add new entries for newly selected needs
+      watchedNeeds.forEach(need => {
+        if (!updatedDetails.some(detail => detail.needType === need)) {
+          updatedDetails.push({
+            needType: need,
+            urgencyLevel: 'medium',
+            description: '',
+            estimatedCost: 0
+          });
+        }
+      });
+      
+      setNeedDetails(updatedDetails);
+      setValue('needDetails', updatedDetails);
+    }
+  }, [watchedNeeds, setValue]);
+  
+  // Handle NGO preference change
+  useEffect(() => {
+    if (watchedNgoPreference === 'automatic') {
+      setValue('preferredNGOs', []);
+      setValue('referredNGO', '');
+    }
+  }, [watchedNgoPreference, setValue]);
   
   const handleNeedsChange = (checkedItems: string[]) => {
     setValue('needs', checkedItems);
@@ -141,6 +243,115 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
       window.scrollTo(0, 0);
+    }
+  };
+  
+  const handleNeedDetailChange = (index: number, field: string, value: any) => {
+    const updatedDetails = [...needDetails];
+    updatedDetails[index] = { ...updatedDetails[index], [field]: value };
+    setNeedDetails(updatedDetails);
+    setValue('needDetails', updatedDetails);
+  };
+  
+  // Handle Aadhaar verification
+  const initiateAadhaarVerification = async () => {
+    const aadhaarNumber = getValues('aadhaarNumber');
+    
+    if (!/^\d{12}$/.test(aadhaarNumber)) {
+      toast({
+        title: "Invalid Aadhaar Number",
+        description: "Please enter a valid 12-digit Aadhaar number",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // In a real implementation, this would call the Aadhaar API
+    // For demo, we'll simulate the OTP process
+    try {
+      // Simulate API call
+      setTimeout(() => {
+        setAadhaarVerificationStep('otp_sent');
+        toast({
+          title: "OTP Sent",
+          description: "A verification code has been sent to your registered mobile number"
+        });
+      }, 1500);
+    } catch (error) {
+      toast({
+        title: "Verification Failed",
+        description: "Unable to initiate Aadhaar verification. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  const verifyAadhaarOtp = () => {
+    if (aadhaarOtp.length !== 6) {
+      toast({
+        title: "Invalid OTP",
+        description: "Please enter a valid 6-digit OTP",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Simulate verification
+    setTimeout(() => {
+      // For demo, we'll consider OTP "123456" as valid
+      if (aadhaarOtp === "123456") {
+        setAadhaarVerificationStep('verified');
+        setValue('aadhaarVerified', true);
+        toast({
+          title: "Verification Successful",
+          description: "Your Aadhaar has been successfully verified"
+        });
+      } else {
+        setAadhaarVerificationStep('failed');
+        toast({
+          title: "Verification Failed",
+          description: "The OTP you entered is incorrect. Please try again.",
+          variant: "destructive"
+        });
+      }
+    }, 1500);
+  };
+  
+  // Get user location
+  const detectLocation = () => {
+    setLocationStatus('detecting');
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setValue('location', {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy
+          });
+          setLocationStatus('detected');
+          toast({
+            title: "Location Detected",
+            description: "Your location has been successfully captured"
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          setLocationStatus('error');
+          toast({
+            title: "Location Detection Failed",
+            description: "Unable to detect your location. Please check your browser settings.",
+            variant: "destructive"
+          });
+        }
+      );
+    } else {
+      setLocationStatus('error');
+      toast({
+        title: "Location Not Supported",
+        description: "Geolocation is not supported by your browser",
+        variant: "destructive"
+      });
     }
   };
   
@@ -204,7 +415,10 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
                 <span className={`text-xs mt-1 ${
                   currentStep >= idx + 1 ? 'text-theuyir-darkgrey' : 'text-gray-400'
                 }`}>
-                  {idx === 0 ? 'Personal Info' : idx === 1 ? 'Needs Assessment' : 'Documents'}
+                  {idx === 0 ? 'Personal Info' : 
+                   idx === 1 ? 'Verification' : 
+                   idx === 2 ? 'Needs Assessment' :
+                   'Documents'}
                 </span>
               </div>
               {idx < totalSteps - 1 && (
@@ -366,155 +580,344 @@ const BeneficiaryApplicationForm: React.FC<BeneficiaryApplicationFormProps> = ({
           </div>
         )}
         
-        {/* Step 2: Needs Assessment */}
+        {/* Step 2: Verification (new step) */}
         {currentStep === 2 && (
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-theuyir-darkgrey mb-4">Needs Assessment</h3>
+            <h3 className="text-lg font-semibold text-theuyir-darkgrey mb-4">Identity Verification</h3>
             
-            <div className="space-y-2">
-              <Label>
-                What are your current needs? <span className="text-red-500">*</span>
-                <span className="text-sm text-gray-500 block mt-1">
-                  Select all that apply
-                </span>
-              </Label>
-              <CheckboxGroup 
-                items={needsOptions}
-                values={watch('needs')}
-                onChange={handleNeedsChange}
-              />
-              {errors.needs && (
-                <p className="text-red-500 text-sm">{errors.needs.message}</p>
-              )}
+            {/* Aadhaar Verification Section */}
+            <div className="bg-gray-50 p-6 rounded-lg mb-6">
+              <h4 className="font-semibold text-theuyir-darkgrey mb-3">Aadhaar Verification</h4>
+              <p className="text-sm text-gray-600 mb-4">
+                Verify your identity using your Aadhaar number. This helps us ensure the authenticity of applications 
+                and improves our ability to provide appropriate assistance.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="aadhaarNumber">Aadhaar Number <span className="text-red-500">*</span></Label>
+                  <div className="flex space-x-2">
+                    <Input
+                      id="aadhaarNumber"
+                      {...register('aadhaarNumber')}
+                      placeholder="Enter your 12-digit Aadhaar number"
+                      className={`flex-1 ${errors.aadhaarNumber ? 'border-red-500' : ''}`}
+                      disabled={aadhaarVerificationStep === 'otp_sent' || aadhaarVerificationStep === 'verified'}
+                    />
+                    {aadhaarVerificationStep === 'initial' || aadhaarVerificationStep === 'failed' ? (
+                      <Button 
+                        type="button" 
+                        onClick={initiateAadhaarVerification}
+                        className="bg-theuyir-pink hover:bg-theuyir-pink/90 text-white"
+                      >
+                        Verify
+                      </Button>
+                    ) : aadhaarVerificationStep === 'verified' ? (
+                      <div className="flex items-center px-3 text-green-600">
+                        <CheckCircle size={18} className="mr-1" /> Verified
+                      </div>
+                    ) : null}
+                  </div>
+                  {errors.aadhaarNumber && (
+                    <p className="text-red-500 text-sm">{errors.aadhaarNumber.message}</p>
+                  )}
+                </div>
+                
+                {aadhaarVerificationStep === 'otp_sent' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="aadhaarOtp">Enter OTP</Label>
+                    <div className="flex space-x-2">
+                      <Input
+                        id="aadhaarOtp"
+                        value={aadhaarOtp}
+                        onChange={(e) => setAadhaarOtp(e.target.value)}
+                        placeholder="Enter the 6-digit OTP sent to your registered mobile"
+                        className="flex-1"
+                        maxLength={6}
+                      />
+                      <Button 
+                        type="button" 
+                        onClick={verifyAadhaarOtp}
+                        className="bg-theuyir-pink hover:bg-theuyir-pink/90 text-white"
+                      >
+                        Submit OTP
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      For this demo, use OTP: 123456
+                    </p>
+                  </div>
+                )}
+                
+                {aadhaarVerificationStep === 'failed' && (
+                  <p className="text-red-500 text-sm">
+                    Verification failed. Please check your Aadhaar number and try again.
+                  </p>
+                )}
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="currentSituation">
-                Please describe your current situation <span className="text-red-500">*</span>
-                <span className="text-sm text-gray-500 block mt-1">
-                  This helps us understand how we can best support you
-                </span>
-              </Label>
-              <Textarea
-                id="currentSituation"
-                {...register('currentSituation')}
-                placeholder="Please provide details about your circumstances, challenges, and what kind of support would be most helpful..."
-                rows={5}
-                className={errors.currentSituation ? 'border-red-500' : ''}
-              />
-              {errors.currentSituation && (
-                <p className="text-red-500 text-sm">{errors.currentSituation.message}</p>
-              )}
+            {/* Location Services Section */}
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <h4 className="font-semibold text-theuyir-darkgrey mb-3">Location Services</h4>
+              <p className="text-sm text-gray-600 mb-4">
+                Sharing your precise location helps us match you with nearby NGOs and services.
+                This improves the efficiency of support delivery.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Your Current Location</span>
+                  
+                  {locationStatus === 'pending' || locationStatus === 'error' ? (
+                    <Button 
+                      type="button" 
+                      onClick={detectLocation}
+                      className="bg-theuyir-pink hover:bg-theuyir-pink/90 text-white"
+                      size="sm"
+                    >
+                      {locationStatus === 'detecting' ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Detecting...
+                        </>
+                      ) : 'Detect Location'}
+                    </Button>
+                  ) : locationStatus === 'detected' ? (
+                    <span className="text-green-600 text-sm flex items-center">
+                      <CheckCircle size={16} className="mr-1" /> Location detected
+                    </span>
+                  ) : null}
+                </div>
+                
+                {locationStatus === 'detected' && (
+                  <div className="p-2 bg-gray-100 rounded text-sm">
+                    <p>Your location has been successfully captured.</p>
+                  </div>
+                )}
+                
+                {locationStatus === 'error' && (
+                  <p className="text-amber-600 text-sm">
+                    We couldn't detect your location. You can still continue with your application,
+                    but providing your location would help us match you with nearby services.
+                  </p>
+                )}
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label>
-                What kind of support are you requesting? <span className="text-red-500">*</span>
-                <span className="text-sm text-gray-500 block mt-1">
-                  Select all that apply
-                </span>
-              </Label>
-              <CheckboxGroup 
-                items={supportOptions}
-                values={watch('supportRequested')}
-                onChange={handleSupportChange}
-              />
-              {errors.supportRequested && (
-                <p className="text-red-500 text-sm">{errors.supportRequested.message}</p>
-              )}
+            <div className="flex justify-between mt-8">
+              <Button type="button" variant="outline" onClick={prevStep}>
+                Previous
+              </Button>
+              <Button 
+                type="button" 
+                onClick={nextStep}
+                disabled={!getValues('aadhaarVerified')}
+              >
+                Next
+              </Button>
             </div>
           </div>
         )}
         
-        {/* Step 3: Documents Upload */}
+        {/* Step 3: Needs Assessment (modified existing Step 2) */}
         {currentStep === 3 && (
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-theuyir-darkgrey mb-4">Supporting Documents</h3>
+            <h3 className="text-lg font-semibold text-theuyir-darkgrey mb-4">Needs Assessment</h3>
             
-            <div className="bg-theuyir-lightgrey p-4 rounded-lg">
-              <h4 className="font-medium text-theuyir-darkgrey mb-2">Required Documents</h4>
-              <p className="text-sm text-gray-600 mb-2">
-                Please upload copies of the following documents to support your application:
-              </p>
-              <ul className="list-disc list-inside text-sm text-gray-600 mb-4">
-                <li>Proof of Identity (Aadhaar Card/Voter ID/PAN Card)</li>
-                <li>Proof of Income (Salary slips/Income certificate/BPL card)</li>
-                <li>Proof of Address (Utility bill/Rent agreement)</li>
-                <li>Any medical records or certificates (if applying for medical assistance)</li>
-              </ul>
-              
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <div className="mb-4">
-                  <Upload className="mx-auto text-gray-400" size={36} />
-                </div>
-                <p className="text-sm text-gray-600 mb-4">
-                  Drag and drop files here, or click to browse
-                </p>
-                <input
-                  type="file"
-                  id="documents"
-                  onChange={handleFileChange}
-                  multiple
-                  className="hidden"
-                />
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={() => document.getElementById('documents')?.click()}
-                >
-                  Browse Files
-                </Button>
-              </div>
-            </div>
-            
-            {uploadedFiles.length > 0 && (
+            {/* Need Selection */}
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Uploaded Documents</Label>
-                <div className="space-y-2">
-                  {uploadedFiles.map((file, index) => (
-                    <div 
-                      key={index} 
-                      className="flex items-center justify-between bg-gray-50 p-3 rounded border border-gray-200"
-                    >
-                      <div className="flex items-center">
-                        <CheckCircle className="text-green-500 mr-2" size={18} />
-                        <span className="text-sm text-gray-700">{file.name}</span>
-                        <span className="text-xs text-gray-400 ml-2">({Math.round(file.size / 1024)} KB)</span>
+                <Label>What type of assistance do you need? <span className="text-red-500">*</span></Label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <CheckboxGroup
+                    value={watchedNeeds || []}
+                    onValueChange={handleNeedsChange}
+                  >
+                    {needsOptions.map((option) => (
+                      <div key={option.id} className="flex items-center space-x-2">
+                        <Checkbox id={option.id} value={option.id} />
+                        <Label htmlFor={option.id} className="text-sm font-normal">
+                          {option.label}
+                        </Label>
                       </div>
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => removeFile(index)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  ))}
+                    ))}
+                  </CheckboxGroup>
                 </div>
+                {errors.needs && (
+                  <p className="text-red-500 text-sm">{errors.needs.message}</p>
+                )}
               </div>
-            )}
-            
-            <div className="flex items-center space-x-2 pt-4">
-              <Checkbox
-                id="terms"
-                checked={watch('termsAccepted')}
-                onCheckedChange={(checked) => setValue('termsAccepted', checked === true)}
-              />
-              <Label 
-                htmlFor="terms" 
-                className={`text-sm leading-tight ${errors.termsAccepted ? 'text-red-500' : ''}`}
-              >
-                I certify that all information provided is true and accurate to the best of my knowledge.
-                I understand that providing false information may result in the rejection of my application.
-              </Label>
+              
+              {/* Detailed Need Information */}
+              {watchedNeeds && watchedNeeds.length > 0 && (
+                <div className="space-y-4 mt-6">
+                  <h4 className="font-semibold text-theuyir-darkgrey">Need Details</h4>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Please provide more specific information about each need to help us match you with the most appropriate services.
+                  </p>
+                  
+                  {needDetails.map((detail, index) => {
+                    const needOption = needsOptions.find(opt => opt.id === detail.needType);
+                    return (
+                      <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                        <h5 className="font-medium mb-3">{needOption?.label || detail.needType}</h5>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Urgency Level */}
+                          {needOption?.urgencyLevels && (
+                            <div className="space-y-2">
+                              <Label htmlFor={`urgency-${index}`}>Urgency Level</Label>
+                              <Select
+                                value={detail.urgencyLevel}
+                                onValueChange={(value) => handleNeedDetailChange(index, 'urgencyLevel', value)}
+                              >
+                                <SelectTrigger id={`urgency-${index}`}>
+                                  <SelectValue placeholder="Select urgency level" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {urgencyLevels.map((level) => (
+                                    <SelectItem key={level.value} value={level.value}>
+                                      {level.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                          
+                          {/* Estimated Cost */}
+                          <div className="space-y-2">
+                            <Label htmlFor={`cost-${index}`}>Estimated Cost (₹)</Label>
+                            <Input
+                              id={`cost-${index}`}
+                              type="number"
+                              min="0"
+                              value={detail.estimatedCost || ''}
+                              onChange={(e) => handleNeedDetailChange(index, 'estimatedCost', Number(e.target.value))}
+                              placeholder="Approximate cost if known"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Detailed Description */}
+                        <div className="space-y-2 mt-4">
+                          <Label htmlFor={`description-${index}`}>Detailed Description</Label>
+                          <Textarea
+                            id={`description-${index}`}
+                            value={detail.description || ''}
+                            onChange={(e) => handleNeedDetailChange(index, 'description', e.target.value)}
+                            placeholder="Please describe your specific needs in detail"
+                            className="resize-none"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              
+              {/* NGO Preference Selection */}
+              <div className="space-y-4 mt-8">
+                <h4 className="font-semibold text-theuyir-darkgrey">NGO Preferences</h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  You can choose how you'd like to be connected with NGOs that can help you.
+                </p>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="ngo-preference">How would you like to be matched with NGOs? <span className="text-red-500">*</span></Label>
+                  <Select
+                    value={watchedNgoPreference}
+                    onValueChange={(value) => {
+                      setValue('ngoPreference', value);
+                      setNgoMatchingType(value);
+                    }}
+                  >
+                    <SelectTrigger id="ngo-preference">
+                      <SelectValue placeholder="Select matching preference" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ngoMatchingPreferences.map((pref) => (
+                        <SelectItem key={pref.value} value={pref.value}>
+                          {pref.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.ngoPreference && (
+                    <p className="text-red-500 text-sm">{errors.ngoPreference.message}</p>
+                  )}
+                </div>
+                
+                {watchedNgoPreference === 'preferred' && (
+                  <div className="space-y-2 mt-4">
+                    <Label>Select preferred NGOs (up to 3)</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <CheckboxGroup
+                        value={watch('preferredNGOs') || []}
+                        onValueChange={(value) => setValue('preferredNGOs', value)}
+                      >
+                        {availableNGOs.map((ngo) => (
+                          <div key={ngo.id} className="flex items-center space-x-2">
+                            <Checkbox 
+                              id={`ngo-${ngo.id}`} 
+                              value={ngo.id}
+                              disabled={
+                                (watch('preferredNGOs')?.length || 0) >= 3 && 
+                                !(watch('preferredNGOs') || []).includes(ngo.id)
+                              }
+                            />
+                            <Label htmlFor={`ngo-${ngo.id}`} className="text-sm font-normal">
+                              {ngo.name}
+                              <span className="text-xs text-gray-500 block">
+                                Focus: {ngo.focusAreas.map(area => {
+                                  const option = needsOptions.find(opt => opt.id === area);
+                                  return option?.label || area;
+                                }).join(', ')}
+                              </span>
+                            </Label>
+                          </div>
+                        ))}
+                      </CheckboxGroup>
+                    </div>
+                  </div>
+                )}
+                
+                {watchedNgoPreference === 'recommended' && (
+                  <div className="space-y-2 mt-4">
+                    <Label htmlFor="referred-ngo">Recommended NGO</Label>
+                    <Select
+                      value={watch('referredNGO') || ''}
+                      onValueChange={(value) => setValue('referredNGO', value)}
+                    >
+                      <SelectTrigger id="referred-ngo">
+                        <SelectValue placeholder="Select the NGO that was recommended to you" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableNGOs.map((ngo) => (
+                          <SelectItem key={ngo.id} value={ngo.id}>
+                            {ngo.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
             </div>
-            {errors.termsAccepted && (
-              <p className="text-red-500 text-sm">{errors.termsAccepted.message}</p>
-            )}
+            
+            <div className="flex justify-between mt-8">
+              <Button type="button" variant="outline" onClick={prevStep}>
+                Previous
+              </Button>
+              <Button type="button" onClick={nextStep}>
+                Next
+              </Button>
+            </div>
           </div>
         )}
+        
+        {/* Step 4: Documents (previously Step 3) - keep existing code for document uploads */}
         
         {/* Navigation buttons */}
         <div className="flex justify-between pt-4 border-t border-gray-200">
