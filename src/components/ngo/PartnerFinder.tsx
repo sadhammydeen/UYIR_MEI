@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/button.tsx';
 import { Search, Filter, MapPin, Users, Briefcase, BarChart, Clock, Star, MessageSquare, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

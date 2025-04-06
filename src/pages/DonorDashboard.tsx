@@ -3,7 +3,7 @@ import {
   BarChart, PieChart, DollarSign, CreditCard, Wallet, 
   ArrowRight, CalendarRange, Receipt, Download
 } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/button.tsx';
 
 interface DonationRecord {
   id: string;

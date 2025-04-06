@@ -4,7 +4,7 @@ import {
   Briefcase, GraduationCap, FileText, CheckCircle, User,
   Users, Mail, Phone, BookOpen, PenTool, Globe, ShieldCheck, Building2, LineChart, Info
 } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/button.tsx';
 import { Link } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 

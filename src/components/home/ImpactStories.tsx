@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight, Heart, MapPin, Calendar } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/button.tsx';
 import { Link } from 'react-router-dom';
 import SectionContainer from '@/components/layout/SectionContainer';
 

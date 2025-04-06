@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import LoginForm from '@/components/auth/LoginForm';
 import { useAuth } from '@/contexts/AuthContext';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/button.tsx';
 
 const Login = () => {
   const { isAuthenticated } = useAuth();

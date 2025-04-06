@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Hero from '@/components/home/Hero';
 import Features from '@/components/home/Features';
 import ImpactStories from '@/components/home/ImpactStories';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/button.tsx';
 import SectionContainer from '@/components/layout/SectionContainer';
 
 // HelpSection component

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArrowRight, BookOpen, Utensils, Home, Stethoscope, GraduationCap, LifeBuoy } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/button.tsx';
 import Header from '@/components/layout/Header';
 import { Link } from 'react-router-dom';
 
