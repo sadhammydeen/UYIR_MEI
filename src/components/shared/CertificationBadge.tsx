@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Check, Shield, Award, Star, Clock, Info, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button.tsx';
 
 interface CertificationBadgeProps {
   type: 'transparency' | 'impact' | 'excellence' | 'community' | 'innovation' | 'volunteer';

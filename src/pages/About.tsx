@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArrowRight, Users, Award, Heart, Calendar, Twitter, Linkedin, Mail } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button.tsx';
 
 const About = () => {
   useEffect(() => {

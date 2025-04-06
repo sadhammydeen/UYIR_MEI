@@ -4,7 +4,7 @@ import {
   Settings, FileText, Bell, Sliders, UserPlus, Plus,
   ListChecks, Package, Database, ShieldCheck
 } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const AdminDashboard: React.FC = () => {

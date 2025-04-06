@@ -3,7 +3,7 @@ import {
   ArrowRight, Heart, CreditCard, Wallet, 
   DollarSign, Calendar, Gift, ShieldCheck, Clock, Repeat 
 } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button.tsx';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';

@@ -12,7 +12,7 @@ import {
   Map,
   Target
 } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button.tsx';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';

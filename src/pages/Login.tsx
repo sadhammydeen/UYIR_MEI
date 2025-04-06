@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import LoginForm from '@/components/auth/LoginForm';
 import { useAuth } from '@/contexts/AuthContext';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button.tsx';
 
 const Login = () => {
   const { isAuthenticated } = useAuth();
@@ -17,9 +17,9 @@ const Login = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="container flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-md">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      <div className="flex-grow flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-md mx-auto transform hover:shadow-lg transition-all duration-300">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-theuyir-darkgrey">Welcome back</h2>
             <p className="mt-2 text-gray-600">Sign in to your account to continue</p>
@@ -74,4 +74,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

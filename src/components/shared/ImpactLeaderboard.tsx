@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button.tsx';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Users, Award, ArrowUp, ArrowDown, Info, Sparkles, BellRing, Medal } from 'lucide-react';
 import { getTopNgosByImpact, NgoProfile } from '@/lib/ngo';

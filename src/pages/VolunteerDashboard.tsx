@@ -3,7 +3,7 @@ import {
   Clock, Calendar, Users, Award, CheckCircle2, 
   PlusCircle, ArrowRight, MapPin, ClipboardList
 } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button.tsx';
 
 interface VolunteerOpportunity {
   id: string;

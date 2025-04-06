@@ -23,7 +23,7 @@ import {
 import { BarChart3, RefreshCw, Smile, Frown, Sparkles } from 'lucide-react';
 // Use a custom Link icon to avoid name collision
 import { Link as LinkIcon } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button.tsx';
 import axios from 'axios';
 import { useSession } from '@/contexts/SessionContext';
 
